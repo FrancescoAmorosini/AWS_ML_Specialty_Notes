@@ -12,7 +12,10 @@
     - [Amazon SageMaker Feature Store](#amazon-sagemaker-feature-store)
     - [Available Amazon SageMaker Images](#available-amazon-sagemaker-images)
     - [PrivateLink](#privatelink)
+    - [SageMaker Experiments](#sagemaker-experiments)
     - [Autopilot](#autopilot)
+    - [SageMaker Neo](#sagemaker-neo)
+    - [SageMaker GroudTruth](#sagemaker-groundtruth)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
   - [Amazon Forecast](#amazon-forecast)
     - [CNN-QR](#cnn-qr)
@@ -114,12 +117,33 @@ If you need different functionality, you can bring your own custom images to Stu
 ### [PrivateLink](https://aws.amazon.com/it/blogs/machine-learning/secure-prediction-calls-in-amazon-sagemaker-with-aws-privatelink/)
 Amazon SageMaker now supports Amazon Virtual Private Cloud (VPC) Endpoints via AWS PrivateLink so you can initiate prediction calls to your machine learning models hosted on Amazon SageMaker inside your VPC, without going over the internet. With AWS PrivateLink support, the SageMaker Runtime API can be called through an interface endpoint within the VPC instead of connecting over the internet. Since the communication between the client application and the SageMaker Runtime API is inside the VPC, there is no need for an Internet Gateway, a NAT device, a VPN connection, or AWS Direct Connect.
 
+### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
+The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
+
 ### [Autopilot](https://github.com/aws/amazon-sagemaker-examples/blob/main/autopilot/sagemaker_autopilot_direct_marketing.ipynb)
 Amazon SageMaker Autopilot is an automated machine learning (commonly referred to as AutoML) solution for tabular datasets. It explores your data, selects the algorithms relevant to your problem type, and prepares the data to facilitate model training and tuning. Autopilot applies a cross-validation resampling procedure automatically to all candidate algorithms when appropriate to test their ability to predict data they have not been trained on. It also produces metrics to assess the predictive quality of its machine learning model candidates. It ranks all of the optimized models tested by their performance. It finds the best performing model that you can deploy at a fraction of the time normally required.
 
 Autopilot currently supports regression and binary and multiclass classification problem types. It supports tabular data formatted as **CSV or Parquet** files in which each column contains a feature with a specific data type and each row contains an observation. The column data types accepted include numerical, categorical, text, and time series that consists of strings of comma-separate numbers.
 
 Available algorithms are **Linear Regression, XGBoost, MLP**.
+
+### [SageMaker Neo](https://www.amazonaws.cn/en/sagemaker/neo/)
+Amazon SageMaker Neo automatically optimizes machine learning models to perform at up to twice the speed with no loss in accuracy. You start with a machine learning model built using MXNet, TensorFlow, PyTorch, or XGBoost and trained using Amazon SageMaker. Then you choose your target hardware platform from Intel, NVIDIA, or ARM. With a single click, SageMaker Neo will then compile the trained model into an executable. The compiler uses a neural network to discover and apply all of the specific performance optimizations that will make your model run most efficiently on the target hardware platform. The model can then be deployed to start making predictions in the cloud or at the edge. Local compute and ML inference capabilities can be brought to the edge with Amazon IoT Greengrass.
+
+### [SageMaker Groundtruth](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-automated-labeling.html)
+With Ground Truth, you can use workers from either Amazon Mechanical Turk, a vendor company that you choose, or an internal, private workforce along with machine learning to enable you to create a labeled dataset. This is how it works:
+
+1. When Ground Truth starts an automated data labeling job, it selects a random sample of input data objects and sends them to human workers. If more than 10% of these data objects fail, the labeling job will fail.
+2. When the labeled data is returned, it is used to create a training set and a validation set. Ground Truth uses these datasets to train and validate the model used for auto-labeling.
+3. Ground Truth runs a batch transform job, using the validated model for inference on the validation data. Batch inference produces a confidence score and quality metric for each object in the validation data.
+4. The auto labeling component will use these quality metrics and confidence scores to create a confidence score threshold that ensures quality labels.
+5. Ground Truth runs a batch transform job on the unlabeled data in the dataset, using the same validated model for inference. This produces a confidence score for each object.
+6. The Ground Truth auto labeling component determines if the confidence score produced in step 5 for each object meets the required threshold determined in step 4. If the confidence score meets the threshold, the expected quality of automatically labeling exceeds the requested level of accuracy and that object is considered auto-labeled.
+7. Step 6 produces a dataset of unlabeled data with confidence scores. Ground Truth selects data points with low confidence scores from this dataset and sends them to human workers.
+8. Ground Truth uses the existing human-labeled data and this additional labeled data from human workers to update the model.
+9. The process is repeated until the dataset is fully labeled or until another stopping condition is met. For example, auto-labeling stops if your human annotation budget is reached.
+
+An annotation is the result of a single worker's labeling task. [Annotation consolidation](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-annotation-consolidation.html) combines the annotations of two or more workers into a single label for your data objects. A label, which is assigned to each object in the dataset, is a probabilistic estimate of what the true label should be. Each object in the dataset typically has multiple annotations, but only one label or set of labels.
 
 ### [SageMaker Available Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html)
 
