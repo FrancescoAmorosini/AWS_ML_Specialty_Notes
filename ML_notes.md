@@ -84,10 +84,10 @@
 ### [Elastic Network Interface](https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html)
 Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput and decrease latency. It also reduces costs by allowing users to attach the desired amount of GPU-powered inference acceleration to an instance without code changes. It supports TensorFlow, PyTorch, and MXNet. Amazon Elastic Inference accelerators are network attached devices that work along with SageMaker instances in your endpoint to accelerate your inference calls. Elastic Inference accelerates inference by allowing you to attach fractional GPUs to any SageMaker instance. You can select the client instance to run your application and attach an Elastic Inference accelerator to use the right amount of GPU acceleration for your inference needs. Elastic Inference helps you lower your cost when not fully utilizing your GPU instance for inference.
 
-### Pipe Input mode
+### [Pipe Input mode](https://aws.amazon.com/it/blogs/machine-learning/using-pipe-input-mode-for-amazon-sagemaker-algorithms/)
 SageMaker Pipe Mode is an input mechanism for SageMaker training containers based on Linux named pipes. SageMaker makes the data available to the training container using named pipes, which allows data to be downloaded from S3 to the container while training is running. For larger datasets, this dramatically improves the time to start training, as the data does not need to be first downloaded to the container. 
 
-### Inter-Container Traffic Encryption
+### [Inter-Container Traffic Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html)
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
 
 ### [Deploy a dev-model in a test-environment](https://aws.amazon.com/it/premiumsupport/knowledge-center/sagemaker-cross-account-model/)
@@ -169,7 +169,7 @@ Exponential Smoothing (ETS) is a commonly used statistical algorithm for time-se
 
 ## AWS Lake Formation
 
-**Personas**: One of the key features of AWS Lake formation is its ability to secure access to data in your data lake. Lake Formation provides its own permissions model that augments the AWS Identity and Access Management (IAM) permissions model. Configuring both IAM groups and Lake Formation personas are required to provide access permissions.
+**[Personas](https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html)**: One of the key features of AWS Lake formation is its ability to secure access to data in your data lake. Lake Formation provides its own permissions model that augments the AWS Identity and Access Management (IAM) permissions model. Configuring both IAM groups and Lake Formation personas are required to provide access permissions.
 
 ---
 
@@ -180,7 +180,7 @@ You cannot stream data directly to Kinesis Data Analytics, you have to use Kines
 
 ## AWS Glue
 
-**Pushdown Predicates (Pre-Filtering)**: In many cases, you can use a pushdown predicate to filter on partitions without having to list and read all the files in your dataset. Instead of reading the entire dataset and then filtering in a DynamicFrame, you can apply the filter directly on the partition metadata in the Data Catalog. Then you only list and read what you actually need into a DynamicFrame. The predicate expression can be any Boolean expression supported by Spark SQL. Anything you could put in a WHERE clause in a Spark SQL query will work.
+**[Pushdown Predicates](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html#aws-glue-programming-etl-partitions-pushdowns) (Pre-Filtering)**: In many cases, you can use a pushdown predicate to filter on partitions without having to list and read all the files in your dataset. Instead of reading the entire dataset and then filtering in a DynamicFrame, you can apply the filter directly on the partition metadata in the Data Catalog. Then you only list and read what you actually need into a DynamicFrame. The predicate expression can be any Boolean expression supported by Spark SQL. Anything you could put in a WHERE clause in a Spark SQL query will work.
 
 **Partition Predicates (Server-Side Filtering)**:The *push_down_predicate* option is applied after listing all the partitions from the catalog and before listing files from Amazon S3 for those partitions. If you have a lot of partitions for a table, catalog partition listing can still incur additional time overhead. To address this overhead, you can use server-side partition pruning with the *catalogPartitionPredicate* option that uses partition indexes in the AWS Glue Data Catalog. This makes partition filtering much faster when you have millions of partitions in one table. You can use both *push_down_predicate* and *catalogPartitionPredicate* in *additional_options* together.
 
@@ -241,7 +241,7 @@ Kinesis Firehose should be used instead of Kinesis Data Streams since there are 
 
 ## Amazon Athena
 
-**Federated query** is a new Amazon Athena feature that enables data analysts, engineers, and data scientists to execute SQL queries across data stored in relational, non-relational, object, and custom data sources. With Athena federated query, customers can submit a single SQL query and analyze data from multiple sources running on-premises or hosted on the cloud.
+**[Federated query](https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html)** is a new Amazon Athena feature that enables data analysts, engineers, and data scientists to execute SQL queries across data stored in relational, non-relational, object, and custom data sources. With Athena federated query, customers can submit a single SQL query and analyze data from multiple sources running on-premises or hosted on the cloud.
 
 ---
 
@@ -275,7 +275,7 @@ To generate fraud predictions, Amazon Fraud Detector uses machine learning model
 
 > In scaling, you're changing *the range* of your data, while in normalization you're changing *the shape of the distribution* of your data.
 
-The Box-Cox and Yeo-Johnson transformations are two different ways to transform a continuous (numeric) variable so that the resulting variable looks more normally distributed. They are often used in feature engineering to reduce skew in the raw variables.
+[The Box-Cox and Yeo-Johnson](https://statisticaloddsandends.wordpress.com/2021/02/19/the-box-cox-and-yeo-johnson-transformations-for-continuous-variables/#:~:text=The%20Box%2DCox%20and%20Yeo%2DJohnson%20transformations%20are%20two%20different,skew%20in%20the%20raw%20variables.&text=%2C%20making%20it%20easier%20for%20theoretical%20analysis.) transformations are two different ways to transform a continuous (numeric) variable so that the resulting variable looks more normally distributed. They are often used in feature engineering to reduce skew in the raw variables.
 
 ### Box-CoX Transformation 
 The transformation is really a family of transformations indexed by a parameter $\lambda$:
@@ -374,7 +374,7 @@ Different regression algorithms can be used to estimate the missing values for e
 
 ---
 
-## Variable Enconding
+## [Variable Enconding](https://towardsdatascience.com/all-about-categorical-variable-encoding-305f3361fd02)
 
 Most of the Machine learning algorithms can not handle **categorical variables** unless we convert them to numerical values. Many algorithm's performances vary based on how Categorical variables are encoded.
 
