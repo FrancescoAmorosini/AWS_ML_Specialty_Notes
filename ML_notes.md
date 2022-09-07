@@ -52,7 +52,15 @@
     - [Weight of Evidence Encoding](#weight-of-evidence-encoding)
     - [Hashing](#hashing)
     - [James-Stein Encoding](#james-stein-encoding)
-  - [Word Embeddings](#word-embeddings)
+- [Word Embeddings](#word-embeddings)
+  - [Bag of Words](#bag-of-words)
+    - [N-Grams](#n-grams)
+    - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
+    - [Scoring Words: Hashing](#scoring-words-hashing)
+    - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
+  - [Word2Vec](#word2vec)
+    - [Common Bag of Words](#cbow)
+    - [Skip-gram](#skip-gram)
   - [Class Imbalance](#class-imbalance)
     - [Sampling Techniques](#sampling-techniques)
   - [Correlation Analysis](#correlation-analysis)
@@ -165,6 +173,12 @@ An annotation is the result of a single worker's labeling task. [Annotation cons
 |Tag an image based on its content | Image Classification | Image Processing |Image Classification |
 |Detect people and objects in an image | Object Detection | Image Processing |Object Detection |
 |Tag every pixel of an image individually with a category | Computer Vision | Image Processing | Semantic Segmentation |
+
+### [Amazon Comprehend on Amazon SageMaker Notebooks](https://aws.amazon.com/it/blogs/machine-learning/analyze-content-with-amazon-comprehend-and-amazon-sagemaker-notebooks/)
+Amazon Comprehend takes your unstructured data such as social media posts, emails, webpages, documents, and transcriptions as input. Then it analyzes the input using the power of NLP algorithms to extract key phrases, entities, and sentiments automatically.
+
+You can use the AWS SDK for Python SDK (Boto3) to connect to Amazon Comprehend from your Python code base. You can use the Comprehend API directly from the SageMaker Notebook Instance.
+
 
 ---
 
@@ -461,14 +475,83 @@ The James-Stein encoder shrinks the average toward the overall average. It is a 
 
 ---
 
-## [Word Embeddings](https://towardsdatascience.com/text-analysis-feature-engineering-with-nlp-502d6ea9225d)
+# [Word Embeddings](https://towardsdatascience.com/text-analysis-feature-engineering-with-nlp-502d6ea9225d)
 
 There are three main step in text preprocessing:
-1. Tokenization ([n-grams](https://cran.r-project.org/web/packages/textrecipes/vignettes/Working-with-n-grams.html))
+1. Tokenization
 2. Normalization
 3. Denoising
 
 In a nutshell, **tokenization** is about splitting strings of text into smaller pieces, or "tokens". Paragraphs can be tokenized into sentences and sentences can be tokenized into words. **Normalization** aims to put all text on a level playing field, e.g., converting all characters to lowercase. **Noise removal** cleans up the text, e.g., remove extra whitespaces.
+
+## [Bag of Words](https://machinelearningmastery.com/gentle-introduction-bag-words-model/)
+A bag-of-words model, or BoW for short, is a way of extracting features from text for use in modeling. A bag-of-words is a representation of text that describes the occurrence of words within a document. It involves two things:
+
+1. A Vocabulary of known words.
+2. A measure of presence of the known words.
+
+In this case the "bag" is a binary vector as long as the vocabulary, where $1$ marks the presence of a word and $0$ its absence.
+
+The intuition is that documents are similar if they have similar content. Further, that from the content alone we can learn something about the meaning of the document. As the vocabulary size increases, so does the vector representation of documents. You can imagine that for a very large corpus, such as thousands of books, that the length of the vector might be thousands or millions of positions. Further, each document may contain very few of the known words in the vocabulary.
+
+### [N-grams](https://cran.r-project.org/web/packages/textrecipes/vignettes/Working-with-n-grams.html)
+A more sophisticated approach is to create a vocabulary of grouped words. This both changes the scope of the vocabulary and allows the bag-of-words to capture a little bit more meaning from the document. 
+
+An N-gram is an N-token sequence of words: a 2-gram (more commonly called a bigram) is a two-word sequence of words like “please turn”, “turn your”, or “your homework”, and a 3-gram (more commonly called a trigram) is a three-word sequence of words like “please turn your”, or “turn your homework”.
+
+>Often a simple bigram approach is better than a 1-gram bag-of-words model for tasks like documentation classification.
+>> The N-gram approach shortens the size of the vocabulary, considering at the same time the *order* of the words within n-grams.
+
+### Scoring Words: Count & Frequence
+Once a vocabulary has been chosen, the occurrence of words in example documents needs to be scored. Sometimes using a binary vector as "bag" is not enough, as it does not take into consideration multiple occurrencies of the word. You can use for example the **Count** (number of occurrencies of a given word) or the **Frequency** (the frequency that each word occurs in the document).
+
+### Scoring Words: Hashing
+We can use a hash representation of known words in our vocabulary. This addresses the problem of having a very large vocabulary for a large text corpus because we can choose the size of the hash space, which is in turn the size of the vector representation of the document.
+
+The challenge is to choose a hash space to accommodate the chosen vocabulary size to minimize the probability of collisions and trade-off sparsity.
+
+### Scoring Words: TF-IDF
+A problem with scoring word frequency is that highly frequent words start to dominate in the document (e.g. larger score), but may not contain as much “informational content” to the model as rarer but perhaps domain specific words. One approach is to rescale the frequency of words by how often they appear in all documents, so that the scores for frequent words like “the” that are also frequent across all documents are penalized.
+
+This approach to scoring is called Term Frequency – Inverse Document Frequency, or TF-IDF for short, where:
+
+* **Term Frequency**: is a scoring of the frequency of the word in the current document.
+* **Inverse Document Frequency**: is a scoring of how rare the word is across documents.
+
+> The scores are a weighting where not all words are equally as important or interesting.
+>> Thus the idf of a rare term is high, whereas the idf of a frequent term is likely to be low.
+
+### Limitations of BoW
+The bag-of-words model is very simple to understand and implement and offers a lot of flexibility for customization on your specific text data.
+
+Nevertheless, it suffers from some shortcomings, such as:
+
+* **Vocabulary**: The vocabulary requires careful design, most specifically in order to manage the size, which impacts the sparsity of the document representations.
+* **Meaning**: Discarding word order ignores the context, and in turn meaning of words in the document (semantics). Context and meaning can offer a lot to the model, that if modeled could tell the difference between the same words differently arranged (“this is interesting” vs “is this interesting”), synonyms (“old bike” vs “used bike”), and much more.
+
+---
+
+## [Word2Vec](https://towardsdatascience.com/introduction-to-word-embedding-and-word2vec-652d0c2060fa)
+Word2Vec is an alternative method to construct an embedding. It can be obtained using two methods (both involving Neural Networks): Skip Gram and Common Bag Of Words (CBOW)
+
+### CBOW
+This method takes the context of each word as the input and tries to predict the word corresponding to the context. Consider our example: *Have a great day*.
+
+Let the input to the Neural Network be the word, great. Notice that here we are trying to predict a target word (day) using a single context input word great. More specifically, we use the one hot encoding of the input word and measure the output error compared to one hot encoding of the target word (day). In the process of predicting the target word, we learn the vector representation of the target word.
+
+Now apply the same process, but using multiple context vectors.
+
+![](https://miro.medium.com/max/894/0*CCsrTAjN80MqswXG)
+
+### [Skip-Gram](https://towardsdatascience.com/skip-gram-nlp-context-words-prediction-algorithm-5bbf34f84e0c#:~:text=Skip%2Dgram%20is%20one%20of,while%20context%20words%20are%20output.)
+Skip-gram is used to predict the context word for a given target word. It’s reverse of CBOW algorithm. 
+
+![](https://miro.medium.com/max/1050/0*yxs3JKs5bKc4c_i8.png)
+
+The word *"sat"* will be given and we’ll try to predict words *"cat"*, *"mat"* at position -1 and 3 respectively given *"sat"* is at position 0 .
+
+> In the CBOW model, the distributed representations of context (or surrounding words) are combined to predict the word in the middle. While in the Skip-gram model, the distributed representation of the input word is used to predict the context.
+>> **Skip-gram** works well with a small amount of the training data, represents well even rare words or phrases. **CBOW** is several times faster to train than the skip-gram, slightly better accuracy for the frequent words.
 
 ---
 
