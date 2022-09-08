@@ -16,6 +16,7 @@
     - [Autopilot](#autopilot)
     - [SageMaker Neo](#sagemaker-neo)
     - [SageMaker GroudTruth](#sagemaker-groundtruth)
+    - [SageMaker Hosting Services](#sagemaker-hosting-services)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
   - [Amazon Forecast](#amazon-forecast)
     - [CNN-QR](#cnn-qr)
@@ -153,6 +154,13 @@ With Ground Truth, you can use workers from either Amazon Mechanical Turk, a ven
 
 An annotation is the result of a single worker's labeling task. [Annotation consolidation](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-annotation-consolidation.html) combines the annotations of two or more workers into a single label for your data objects. A label, which is assigned to each object in the dataset, is a probabilistic estimate of what the true label should be. Each object in the dataset typically has multiple annotations, but only one label or set of labels.
 
+### [SageMaker Hosting Services](https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html)
+After you train your machine learning model, you can deploy it using Amazon SageMaker to get predictions in any of the following ways, depending on your use case:
+* For persistent, real-time endpoints that make one prediction at a time, use SageMaker **[real-time hosting services](https://docs.aws.amazon.com/sagemaker/latest/dg/realtime-endpoints.html)**.
+* Workloads that have idle periods between traffic spurts and can tolerate cold starts, use **[Serverless Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html)**.
+* Requests with large payload sizes up to 1GB, long processing times, and near real-time latency requirements, use **[Amazon SageMaker Asynchronous Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/async-inference.html)**.
+* To get predictions for an entire dataset, use **[SageMaker batch transform](https://docs.aws.amazon.com/sagemaker/latest/dg/batch-transform.html)**. 
+
 ### [SageMaker Available Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html)
 
 |  Use Case |  ML Problem  | ML Domain  | Algorithms  |
@@ -231,6 +239,8 @@ Glue's **Relationalize** transformation can be used to convert data in a Dynamic
 > GlueTransform is the parent class for all of the AWS Glue Transform classes such as ApplyMapping, Unbox, and Relationize.
 
 **Data Brew**: similar to Sagemaker Data Wrangles, you can run profile job (fully managed) that will give you basic statistics on your data (correlation, statistics, etc). 
+
+
 
 ---
 
