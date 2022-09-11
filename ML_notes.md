@@ -16,6 +16,7 @@
     - [Autopilot](#autopilot)
     - [SageMaker Neo](#sagemaker-neo)
     - [SageMaker GroudTruth](#sagemaker-groundtruth)
+    - [SageMaker Clarify](#sagemaker-clarify)
     - [SageMaker Hosting Services](#sagemaker-hosting-services)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
   - [Amazon Forecast](#amazon-forecast)
@@ -80,6 +81,7 @@
   - [Securing Sensitive Information in AWS Data Stores](#securing-sensitive-information-in-aws-data-stores)
 - [Model Selection](#model-selection)
   - [Feature Combination](#feature-combination)
+  - [Batch Size](#batch-size)
   - [Drift](#drift)
     - [KL-Divergence](#kl-divercence)
     - [Population Stability Index](#population-stability-index)
@@ -160,6 +162,30 @@ With Ground Truth, you can use workers from either Amazon Mechanical Turk, a ven
 9. The process is repeated until the dataset is fully labeled or until another stopping condition is met. For example, auto-labeling stops if your human annotation budget is reached.
 
 An annotation is the result of a single worker's labeling task. [Annotation consolidation](https://docs.aws.amazon.com/sagemaker/latest/dg/sms-annotation-consolidation.html) combines the annotations of two or more workers into a single label for your data objects. A label, which is assigned to each object in the dataset, is a probabilistic estimate of what the true label should be. Each object in the dataset typically has multiple annotations, but only one label or set of labels.
+
+### [SageMaker Clarify](https://docs.aws.amazon.com/sagemaker/latest/dg/clarify-configure-processing-jobs.html)
+Amazon SageMaker Clarify helps improve your machine learning models by detecting potential bias and helping explain how these models make predictions. 
+
+**Bias** can be present in your data before any model training occurs. Inspecting your data for bias before training begins can help detect any data collection gaps, inform your feature engineering, and help you understand what societal biases the data may reflect. Unbiased training data (as determined by concepts of fairness measured by bias metric) may still result in biased model predictions after training. Whether this occurs depends on several factors including hyperparameter choices.
+
+There are expanding business needs and legislative regulations that require explanations of why a model made the decision it did. SageMaker Clarify uses SHAP to **explain the contribution that each input feature makes to the final decision**.
+
+Kernel SHAP algorithm requires a baseline (also known as background dataset). If not provided, a baseline is calculated automatically by SageMaker Clarify using K-means or K-prototypes in the input dataset.
+
+**Partial dependence plots** (PDP) show the dependence of the predicted target response on a set of input features of interest. These are marginalized over the values of all other input features and are referred to as the complement features. Intuitively, you can interpret the partial dependence as the target response, which is expected as a function of each input feature of interest.
+
+[Available bias metrics are](https://docs.aws.amazon.com/sagemaker/latest/dg/clarify-measure-data-bias.html):
+
+|  Metric |  description  | Use Case  | Range |
+|---|---|---|---|
+| Class Imbalance  | Measures the imbalance in the number of members between different facet values. | Could there be age-based biases due to not having enough data for the demographic outside a middle-aged facet?  |  Normalized range: [-1,+1] |
+| Difference in Proportions of Labels (DPL)  | Measures the imbalance of positive outcomes between different facet values. | Could there be age-based biases in ML predictions due to biased labeling of facet values in the data?  |  Normalized range: [-1,+1] |
+| Kullback-Leibler Divergence (KL)  | Measures how much the outcome distributions of different facets diverge from each other entropically. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
+| Jensen-Shannon Divergence (JS)  | Measures how much the outcome distributions of different facets diverge from each other entropically. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
+| Lp-norm (LP) | Measures a p-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
+| Total Variation Distance (TVD) | Measures half of the L1-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
+| Conditional Demographic Disparity (CDD) | Measures the disparity of outcomes between different facets as a whole, but also by subgroups. | Do some groups have a larger proportion of rejections for college admission outcomes than their proportion of acceptances?  | Range of CDD: [-1, +1] |
+
 
 ### [SageMaker Hosting Services](https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html)
 After you train your machine learning model, you can deploy it using Amazon SageMaker to get predictions in any of the following ways, depending on your use case:
@@ -633,7 +659,7 @@ The Pearson correlation coefficient can be used to summarize the strength of the
 
 $$ \rho(X,Y) = \frac{cov(X,Y)}{std(X)*std(Y)}$$
 
-> Pearson's correlation coefficient ranges from -1 to 1, and two variables are considered strongly correlated when $|\rho(X,Y)| > 0.5$. Each variable is always completely correlated with itself ($\rho(X,X) = 1$).
+> Pearson's correlation coefficient ranges from -1 to 1, and two variables are considered strongly correlated when $|\rho(X,Y)| > 0.5$. Each variable is always completely correlated with itself ( $\rho(X,X) = 1$ ).
 
 ### Spearman's correlation
 Two variables may be related by a **nonlinear relationship**, such that the relationship is stronger or weaker across the distribution of the variables. In this case, the Spearman's correlation coefficient can be used to summarize the strength between the two data samples. Instead of calculating the coefficient using covariance and standard deviations on the samples themselves, these statistics are calculated from the relative rank of values on each sample. This is a common approach used in non-parametric statistics, e.g. statistical methods where **we do not assume a distribution of the data** such as Gaussian.
@@ -734,6 +760,18 @@ Model selection is the task of selecting a statistical model from a set of candi
 ## [Feature Combination](https://datascience.stackexchange.com/questions/28883/why-adding-combinations-of-features-would-increase-performance-of-linear-svm)
 
 Combination of existing features can give new features and help for classification. Polynomial features ($x^2$, $x^3$, $y^2$, etc.) do not give additional data points, but instead increase the complexity the objective function (which sometimes leads to overfitting). 
+
+---
+
+## [Batch Size](https://medium.com/mini-distill/effect-of-batch-size-on-training-dynamics-21c14f7a716e)
+Batch size is one of the most important hyperparameters to tune in modern deep learning systems. Practitioners often want to use a larger batch size to train their model as it allows computational speedups from the parallelism of GPUs. However, it is well known that too large of a batch size will lead to poor generalization. For convex functions that we are trying to optimize, there is an inherent tug-of-war between the benefits of smaller and bigger batch sizes.
+
+This is intuitively explained by the fact that smaller batch sizes allow the model to “start learning before having to see all the data.” The **downside of using a smaller batch size is that the model is not guaranteed to converge to the global optima**. It will bounce around the global optima, staying outside some ϵ-ball of the optima where ϵ depends on the ratio of the batch size to the dataset size. 
+
+Therefore, under no computational constraints, it is often advised that one starts at a small batch size, reaping the benefits of faster training dynamics, and steadily grows the batch size through training, also reaping the benefits of guaranteed convergence.
+
+>  It has been observed in practice that when using a larger batch there is a significant degradation in the quality of the model, as measured by its ability to generalize.
+>> The presented results confirm that using small batch sizes achieves the best training stability and generalization performance, for a given computational cost, across a wide range of experiments. Nevertheless, the batch size impacts how quickly a model learns and the stability of the learning process.
 
 ---
 ## [Drift](https://towardsdatascience.com/automating-data-drift-thresholding-in-machine-learning-systems-524e6259f59f)
