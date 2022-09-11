@@ -70,6 +70,7 @@
     - [Spearman's correlation](#spearmans-correlation)
     - [Polychoric correlation](#polychoric-correlation)
     - [Mutual Information](#mutual-information)
+    - [Cramer's V](#cramers-v)
   - [Variance Methods](#variance-methods)
     - [Principal Component Analysis](#principal-component-analysis)
     - [T-Distributed Stochastic Neighbourhood Embedding (t-SNE)](#t-distributed-stochastic-neighbourhood-embedding-t-sne)
@@ -79,6 +80,10 @@
   - [Securing Sensitive Information in AWS Data Stores](#securing-sensitive-information-in-aws-data-stores)
 - [Model Selection](#model-selection)
   - [Feature Combination](#feature-combination)
+  - [Drift](#drift)
+    - [KL-Divergence](#kl-divercence)
+    - [Population Stability Index](#population-stability-index)
+    - [Hypothesis Test](#hypothesis-test)
   - [Naive Bayes](#naive-bayes)
   - [Support Vector Machines](#support-vector-machines)
   - [Factorization Machines](#factorization-machines)
@@ -107,6 +112,8 @@ To deploy the model to the test account, the engineer must first create an AWS K
 
 ### Amazon SageMaker Data Wrangler
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
+
+Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL).
 
 ### Amazon SageMaker Feature Store
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
@@ -222,6 +229,8 @@ Exponential Smoothing (ETS) is a commonly used statistical algorithm for time-se
 ## Amazon Kinesis
 You cannot stream data directly to Kinesis Data Analytics, you have to use Kinesis Data Stream of Kinesis Firehose first. Kinesis Firehose can produce parquet formatted data (from JSON!), but cannot apply transformations like Kinesis Data Analytics.
 
+Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations.
+
 ---
 
 ## AWS Glue
@@ -275,6 +284,12 @@ Amazon QuickSight is a cloud-based business intelligence service that provides i
 [**Resizing Clusters**](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html): you can use elastic resize to scale your cluster by changing the node type and number of nodes. We recommend using elastic resize, which typically completes in minutes. If your new node configuration isn't available through elastic resize, you can use classic resize.
 * *Elastic resize* – Use it to change the node type, number of nodes, or both. Elastic resize works quickly by changing or adding nodes to your existing cluster. If you change only the number of nodes, queries are temporarily paused and connections are held open, if possible. Typically, elastic resize takes 10–15 minutes. During the resize operation, the cluster is read-only.
 * *Classic resize* – Use it to change the node type, number of nodes, or both. Classic resize provisions a new cluster and copies the data from the source cluster to the new cluster. Choose this option only when you are resizing to a configuration that isn't available through elastic resize, because it takes considerably more time to complete. An example of when to use it is when resizing to or from a single-node cluster. During the resize operation, the cluster is read-only. Classic resize can take several hours to several days, or longer, depending on the amount of data to transfer and the difference in cluster size and computing resources.
+
+[**Spectrum**](https://docs.aws.amazon.com/redshift/latest/dg/c-using-spectrum.html): a feature within Redshift data warehousing service that lets a data analyst conduct fast, complex analysis on objects stored on the AWS cloud. This can save time and money because it eliminates the need to move data from a storage service to a database, and instead directly queries data inside an S3 bucket. 
+
+Redshift Spectrum can be used in conjunction with any other AWS compute service with direct S3 access, including Amazon Athena, as well as Amazon EMR for Apache Spark, Apache Hive and Presto.
+
+> Using Amazon Redshift Spectrum, you can efficiently query and retrieve structured and semistructured data from files in Amazon S3 without having to load the data into Amazon Redshift tables.
 
 ---
 
@@ -626,8 +641,6 @@ Two variables may be related by a **nonlinear relationship**, such that the rela
 $$\rho(X,Y) = \frac{cov(Rank(X),Rank(Y))}{std(Rank(X))*std(Rank(Y))}$$
 >A linear relationship between the variables is not assumed, although a **monotonic relationship is assumed**.
 
----
-
 ### [Polychoric correlation](https://www.r-bloggers.com/2021/02/how-does-polychoric-correlation-work-aka-ordinal-to-ordinal-correlation/)
 
 In statistics, polychoric correlation is a technique for estimating the correlation between two hypothesised normally distributed continuous latent variables, from two **observed ordinal variables**.
@@ -642,6 +655,12 @@ Mutual Information measures the **entropy drops** under the condition of the tar
 
 The main difference with correlation (and by extent, [Pearson's Correlation Coefficient](#pearsons-correlation)) is that the latter is a measure of linear dependence, whereas mutual information measures general dependence (including non-linear relations). Therefore, mutual information detects dependencies that do not only depend on the covariance. Thus, mutual information is zero when the two random variables are strictly independent.
 
+### [Cramer's V](https://www.statstest.com/cramers-v-2/)
+Cramer’s V is used to understand the strength of the relationship between two variables. To use it, your variables of interest should be categorical with two or more unique values per category. If there are only two unique values, then using Cramer’s V is the same as using the Phi Coefficient.
+
+> If your data are continuous, Pearson Correlation may be more appropriate.
+>> If one of your variables is continuous and the other is binary, you should use Point Biserial Correlation.
+>>> A map of correct statistical tests can be found [HERE](https://www.statstest.com/relationship/).
 ---
 
 ## Variance Methods
@@ -715,6 +734,39 @@ Model selection is the task of selecting a statistical model from a set of candi
 ## [Feature Combination](https://datascience.stackexchange.com/questions/28883/why-adding-combinations-of-features-would-increase-performance-of-linear-svm)
 
 Combination of existing features can give new features and help for classification. Polynomial features ($x^2$, $x^3$, $y^2$, etc.) do not give additional data points, but instead increase the complexity the objective function (which sometimes leads to overfitting). 
+
+---
+## [Drift](https://towardsdatascience.com/automating-data-drift-thresholding-in-machine-learning-systems-524e6259f59f)
+Data drift fundamentally measures the change in statistical distribution between two distributions, usually the same feature but at different points in time. There are many different kinds of metrics we could use for quantifying data drift. 
+
+> For any drift metrics, P is the training data (reference set) on which the ML model was trained and Q is the data on which the model is performing predictions (inference set), which can be defined on a rolling time window for streaming models or a batch basis for batch models.
+
+### KL-Divercence
+KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
+
+![](https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png)
+
+### Population Stability Index
+While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
+
+![](https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png)
+
+### Hypothesis Test
+Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
+
+For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
+
+![](https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png)
+
+For a **continuous features** with $F_P$ and $F_Q$ being the empirical cumulative densities, for $P$ and $Q$ respectively, the **Kolmogorov-Smirnov** (KS) test is a nonparametric, i.e. distribution-free, test that compares the empirical cumulative density functions $F_P$ and $F_Q$.
+
+![](https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png)
+
+For hypothesis test metrics, the trivial solution for setting alert thresholds at the the proper critical values for each test using the traditional α=.05, i.e. 95% confident that any hypothesis metric above the respective critical value suggests significant drift where $Q$ ∼ $P$ is likely false.
+
+Hypothesis tests, however, come with limitations, from sample sizes influencing significance for the Chi-Squared test to sensitivity in the center of the distribution rather than the tails for the KS test.
+
+That's why we need Automated Drift Threshold, which can be obtained via **Bootstrapping** or **Closed-Forms Statistics**.
 
 ---
 
