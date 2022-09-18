@@ -8,10 +8,13 @@
     - [Pipe Input mode](#pipe-input-mode)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
     - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environment)
-    - [Amazon SageMaker Data Wrangler](#amazon-sagemaker-data-wrangler)
-    - [Amazon SageMaker Feature Store](#amazon-sagemaker-feature-store)
+    - [Train SageMaker Models Using Data NOT from S3](#train-sagemaker-models-using-data-not-from-s3)
+    - [SageMaker Data Wrangler](#amazon-sagemaker-data-wrangler)
+    - [SageMaker Feature Store](#amazon-sagemaker-feature-store)
     - [Available Amazon SageMaker Images](#available-amazon-sagemaker-images)
     - [PrivateLink](#privatelink)
+    - [Connect SageMaker Notebook with External Resources](#connect-sagemaker-notebook-with-external-resources)
+    - [Gateway Endpoints for Amazon S3](#gateway-endpoints-for-amazon-s3)
     - [SageMaker Experiments](#sagemaker-experiments)
     - [Autopilot](#autopilot)
     - [SageMaker Neo](#sagemaker-neo)
@@ -27,11 +30,12 @@
     - [ARIMA](#arima)
     - [ETS](#ets)
   - [AWS Lake Formation](#aws-lake-formation)
+  - [AWS Data Pipeline](#aws-data-pipeline)
   - [Amazon Kinesis](#amazon-kinesis)
   - [AWS Glue](#aws-glue)
-  - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
-    - [Kibana](#kibana)
-    - [Amazon QuickSight](#amazon-quicksight)
+  - [Amazon QuickSight](#amazon-quicksight)
+    - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
+    - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
   - [Amazon Redshift](#amazon-redshift)
   - [Amazon Kinesis](#amazon-kinesis)
   - [Amazon Athena](#amazon-athena)
@@ -112,12 +116,16 @@ SageMaker automatically encrypts machine learning data and related artifacts in 
 ### [Deploy a dev-model in a test-environment](https://aws.amazon.com/it/premiumsupport/knowledge-center/sagemaker-cross-account-model/)
 To deploy the model to the test account, the engineer must first create an AWS KMS customer master key (CMK) for the SageMaker training job in the development account and link it to the test account. Then, an IAM role also needs to be created in the test account. This role requires SageMaker access and access to the training job output S3 bucket and CMK which are both in the development account. The output S3 bucket policy also needs to be updated to allow access from the test account. Finally, create the Amazon SageMaker deployment model, endpoint configuration, and endpoint from the test account.
 
-### Amazon SageMaker Data Wrangler
+### SageMaker Data Wrangler
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
 
 Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL).
 
-### Amazon SageMaker Feature Store
+### [Train SageMaker Models Using Data NOT from S3](https://www.slideshare.net/AmazonWebServices/train-models-on-amazon-sagemaker-using-data-not-from-amazon-s3-aim419-aws-reinvent-2018)
+Generally, you cannot directly load data from an RDS or DynamoDB without first staging the data in S3. One possible solution would be to use AWS Glue to perform ETL preprocessing and output data into an S3. Another solution can involve AWS Data Pipeline.
+
+
+### SageMaker Feature Store
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
 
 ### [Available Amazon SageMaker Images](https://docs.aws.amazon.com/sagemaker/latest/dg/notebooks-available-images.html)
@@ -134,6 +142,22 @@ If you need different functionality, you can bring your own custom images to Stu
 
 ### [PrivateLink](https://aws.amazon.com/it/blogs/machine-learning/secure-prediction-calls-in-amazon-sagemaker-with-aws-privatelink/)
 Amazon SageMaker now supports Amazon Virtual Private Cloud (VPC) Endpoints via AWS PrivateLink so you can initiate prediction calls to your machine learning models hosted on Amazon SageMaker inside your VPC, without going over the internet. With AWS PrivateLink support, the SageMaker Runtime API can be called through an interface endpoint within the VPC instead of connecting over the internet. Since the communication between the client application and the SageMaker Runtime API is inside the VPC, there is no need for an Internet Gateway, a NAT device, a VPN connection, or AWS Direct Connect.
+
+### [Gateway Endpoints for Amazon S3](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html#vpc-endpoints-s3-bucket-policies)
+You can access Amazon S3 from your VPC using gateway VPC endpoints. After you create the gateway endpoint, you can add it as a target in your route table for traffic destined from your VPC to Amazon S3.
+
+In order to restrict access to the S3 bucket you have to use **bucket policies**. You can deny all traffic except for specific VPC Endpoint, VPC, IP address range, AWS Account, AWS IAM Roles.
+
+A VPC endpoint for Amazon S3 is a logical entity within a VPC that allows connectivity only to Amazon S3. The VPC endpoint routes requests to Amazon S3 and routes responses back to the VPC.
+
+### [Connect SageMaker Notebook with External Resources](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html)
+By default, SageMaker Studio provides a network interface that allows communication with the internet through a VPC managed by SageMaker. Traffic to AWS services like Amazon S3 and CloudWatch goes through an internet gateway, as does traffic that accesses the SageMaker API and SageMaker runtime. Traffic between the domain and your Amazon EFS volume goes through the VPC that you specified when you onboarded to Studio or called the CreateDomain API.
+
+![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-internet.png)
+
+To prevent SageMaker from providing internet access to your Studio notebooks, you can disable internet access by specifying the *"VPC only"* network access. As a result, you won't be able to run a Studio notebook unless your VPC has an interface endpoint to the SageMaker API and runtime, or a NAT gateway with internet access, and your security groups allow outbound connections. 
+
+![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-private.png)
 
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
@@ -246,6 +270,14 @@ Exponential Smoothing (ETS) is a commonly used statistical algorithm for time-se
 
 ---
 
+## [AWS Data Pipeline](https://docs.aws.amazon.com/datapipeline/latest/DeveloperGuide/what-is-datapipeline.html)
+AWS Data Pipeline is a web service that you can use to automate the movement and transformation of data. Data Pipeline is based of the following components:
+* A **pipeline definition** specifies the business logic of your data management.
+* A **pipeline schedules** and runs tasks by creating Amazon EC2 instances to perform the defined work activities.
+* **Task Runner** polls for tasks and then performs those tasks. For example, Task Runner could copy log files to Amazon S3 and launch Amazon EMR clusters. 
+
+---
+
 ## AWS Lake Formation
 
 **[Personas](https://docs.aws.amazon.com/lake-formation/latest/dg/permissions-reference.html)**: One of the key features of AWS Lake formation is its ability to secure access to data in your data lake. Lake Formation provides its own permissions model that augments the AWS Identity and Access Management (IAM) permissions model. Configuring both IAM groups and Lake Formation personas are required to provide access permissions.
@@ -279,9 +311,17 @@ Glue's **Relationalize** transformation can be used to convert data in a Dynamic
 
 ---
 
-## [Amazon QuickSight vs Kibana](https://wisdomplexus.com/blogs/kibana-vs-quicksight/)
+## Amazon QuickSight
+Amazon QuickSight is a cloud-based business intelligence service that provides insights into the data through visualization. With the help of QuickSight, users can access the dashboard from any device and can be further integrated into any of the applications or websites to derive insight into the data received through them.It can collect data from any connected source. These sources can be any 3rd party applications, cloud, or on-premise sources. Amazon QuickSight derives the insights from these collected sources through ML techniques and provides user information in interactive dashboards, email-reports, or embedded analytics.
 
-### Kibana
+* Users can share particular dashboards with any staff member in the organization simply through browsers or mobile devices.
+* QuickSight calculation engine is supported by SPICE (super-fast, parallel, in-memory, calculation engine). This SPICE engine replicates data quickly, thus assisting multiple users to perform various analysis tasks.
+* You can discover hidden trends and insights into your data through the AWS proven machine learning capabilities.
+* Quicksight has an anomaly insights feature, removing the need to write custom code.
+* If you want to use SPICE and you don't have enough space, choose Edit/Preview data. In data preparation, you can remove fields from the data set to decrease its size. You can also apply a filter or write a SQL query that reduces the number of rows or columns returned.
+
+### [Amazon QuickSight vs Kibana](https://wisdomplexus.com/blogs/kibana-vs-quicksight/)
+
 Kibana is a visualization tool.
 Volumes of data are initially stored in the formats of index or indices.Mostly these indexes are supported by **Elasticsearch**.
 Indices convert the data into a structured form for Elasticsearch with Logstash or beats that collect the data from log files.
@@ -293,16 +333,19 @@ Results for the data are presented in visualized format through Lens, canvas, an
 * *Amazon Elasticsearch* Service can integrate with *Kinesis* to visualize data in real-time.
 * Kibana has no data matching built-in function.
 
-### Amazon QuickSight
-Amazon QuickSight is a cloud-based business intelligence service that provides insights into the data through visualization. With the help of QuickSight, users can access the dashboard from any device and can be further integrated into any of the applications or websites to derive insight into the data received through them.It can collect data from any connected source. These sources can be any 3rd party applications, cloud, or on-premise sources. Amazon QuickSight derives the insights from these collected sources through ML techniques and provides user information in interactive dashboards, email-reports, or embedded analytics.
-
-* Users can share particular dashboards with any staff member in the organization simply through browsers or mobile devices.
-* QuickSight calculation engine is supported by SPICE (super-fast, parallel, in-memory, calculation engine). This SPICE engine replicates data quickly, thus assisting multiple users to perform various analysis tasks.
-* You can discover hidden trends and insights into your data through the AWS proven machine learning capabilities.
-* Quicksight has an anomaly insights feature, removing the need to write custom code.
-* If you want to use SPICE and you don't have enough space, choose Edit/Preview data. In data preparation, you can remove fields from the data set to decrease its size. You can also apply a filter or write a SQL query that reduces the number of rows or columns returned.
-
 > Athena fits the use case for the basic analysis of S3 data. Quicksight, which integrates with Athena, is a fully managed service that can be used to create rich visualizations for customers. The data is better suited for a relational data solution than a graph DB. Kibana cannot visualize data stored in S3 directly, as it would first have to be read into Elasticsearch. Athena is more appropriate for basic analysis than creating models in Sagemaker.
+
+### [Quicksight-SageMaker integration](https://aws.amazon.com/it/blogs/machine-learning/making-machine-learning-predictions-in-amazon-quicksight-and-amazon-sagemaker/)
+
+You can now integrate your own Amazon SageMaker ML models with QuickSight to analyze the augmented data and use it directly in your business intelligence dashboards.
+
+Traditionally, getting the predictions from trained models into a BI tool requires substantial heavy lifting. You have to write code to ETL the data into S3, call the inference API to get the predictions, ETL the model output from Amazon S3 to a queryable source, orchestrate this process whenever new data is available, and repeat the workflow for every model. 
+
+To run inferencing on your dataset, you can connect to any of the QuickSight supported data sources (such as Amazon S3, Amazon Athena, Amazon Aurora, Amazon Relational Database Service (Amazon RDS), and Amazon Redshift, and third-party application sources like Salesforce, ServiceNow, and JIRA), select the pretrained Amazon SageMaker model you want to use for prediction, and QuickSight takes care of the rest. After the data ingestion and inference job are complete, you can create visualizations and build reports based on the predictions and share it with business stakeholders, all in an end-to-end workflow. The output of the inference is stored as a QuickSight SPICE dataset and makes it possible to share it with others.
+
+> [QuickSight’s integration](https://github.com/aws-samples/quicksight-sagemaker-integration-blog) with Amazon Sagemaker is only available on the Enterprise Edition of Amazon QuickSight.
+
+
 
 ---
 
@@ -759,7 +802,7 @@ Model selection is the task of selecting a statistical model from a set of candi
 
 ## [Feature Combination](https://datascience.stackexchange.com/questions/28883/why-adding-combinations-of-features-would-increase-performance-of-linear-svm)
 
-Combination of existing features can give new features and help for classification. Polynomial features ($x^2$, $x^3$, $y^2$, etc.) do not give additional data points, but instead increase the complexity the objective function (which sometimes leads to overfitting). 
+Combination of existing features can give new features and help for classification. Polynomial features ( $x^2$, $x^3$, $y^2$, etc.) do not give additional data points, but instead increase the complexity the objective function (which sometimes leads to overfitting). 
 
 ---
 
