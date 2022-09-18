@@ -4,19 +4,20 @@
 - [AWS Machine Learning Specialty Notes](#aws-machine-learning-specialty-notes)
 - [Amazon Web Services](#amazon-web-services)
   - [Amazon SageMaker](#amazon-sagemaker)
-    - [Elastic Network Interface](#elastic-network-interface)
-    - [Pipe Input mode](#pipe-input-mode)
+    - [Elastic Inference](#elastic-inference)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
-    - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environment)
-    - [Train SageMaker Models Using Data NOT from S3](#train-sagemaker-models-using-data-not-from-s3)
     - [SageMaker Data Wrangler](#amazon-sagemaker-data-wrangler)
     - [SageMaker Feature Store](#amazon-sagemaker-feature-store)
     - [Available Amazon SageMaker Images](#available-amazon-sagemaker-images)
     - [PrivateLink](#privatelink)
     - [Connect SageMaker Notebook with External Resources](#connect-sagemaker-notebook-with-external-resources)
     - [Gateway Endpoints for Amazon S3](#gateway-endpoints-for-amazon-s3)
+    - [Pipe Input mode](#pipe-input-mode)
+    - [Train SageMaker Models Using Data NOT from S3](#train-sagemaker-models-using-data-not-from-s3)
+    - [SageMaker Projects](#sagemaker-projects)
     - [SageMaker Experiments](#sagemaker-experiments)
-    - [Autopilot](#autopilot)
+    - [SageMaker Autopilot](#sagemaker-autopilot)
+    - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environmen)
     - [SageMaker Neo](#sagemaker-neo)
     - [SageMaker GroudTruth](#sagemaker-groundtruth)
     - [SageMaker Clarify](#sagemaker-clarify)
@@ -29,6 +30,7 @@
     - [NPTS](#npts)
     - [ARIMA](#arima)
     - [ETS](#ets)
+  - [Amazon Personalize](#amazon-personalize)
   - [AWS Lake Formation](#aws-lake-formation)
   - [AWS Data Pipeline](#aws-data-pipeline)
   - [Amazon Kinesis](#amazon-kinesis)
@@ -39,6 +41,10 @@
   - [Amazon Redshift](#amazon-redshift)
   - [Amazon Kinesis](#amazon-kinesis)
   - [Amazon Athena](#amazon-athena)
+    - [Federated query](#federated-query)
+    - [Partitioning data in Athena](#partitioning-data-in-athena)
+    - [Compression](#compression)
+    - [Athena UNLOAD for ML and ETL Pipelines](#athena-unload-for-ml-and-etl-pipelines)
   - [Amazon Kendra](#amazon-kendra)
   - [Amazon CodeGuru Reviewer](#amazon-codeguru-reviewer)
   - [Amazon Fraud Detector](#amazon-fraud-detector)
@@ -92,7 +98,8 @@
     - [Hypothesis Test](#hypothesis-test)
   - [Naive Bayes](#naive-bayes)
   - [Support Vector Machines](#support-vector-machines)
-  - [Factorization Machines](#factorization-machines)
+  - [Recommender Systems](#recommender-systems)
+    - [Neural Collaborative Filtering on SageMaker](#neural-collaborative-filtering-on-sagemaker)
 - [Model Evaluation](#model-evaluation)
   - [Confusion Matrix](#confusion-matrix)
     - [Statistics on Confusion Matrix](#statistics-on-confusion-matrix)
@@ -104,26 +111,16 @@
 
 ## Amazon SageMaker
 
-### [Elastic Network Interface](https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html)
+### [Elastic Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html)
 Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput and decrease latency. It also reduces costs by allowing users to attach the desired amount of GPU-powered inference acceleration to an instance without code changes. It supports TensorFlow, PyTorch, and MXNet. Amazon Elastic Inference accelerators are network attached devices that work along with SageMaker instances in your endpoint to accelerate your inference calls. Elastic Inference accelerates inference by allowing you to attach fractional GPUs to any SageMaker instance. You can select the client instance to run your application and attach an Elastic Inference accelerator to use the right amount of GPU acceleration for your inference needs. Elastic Inference helps you lower your cost when not fully utilizing your GPU instance for inference.
-
-### [Pipe Input mode](https://aws.amazon.com/it/blogs/machine-learning/using-pipe-input-mode-for-amazon-sagemaker-algorithms/)
-SageMaker Pipe Mode is an input mechanism for SageMaker training containers based on Linux named pipes. SageMaker makes the data available to the training container using named pipes, which allows data to be downloaded from S3 to the container while training is running. For larger datasets, this dramatically improves the time to start training, as the data does not need to be first downloaded to the container. 
 
 ### [Inter-Container Traffic Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html)
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
-
-### [Deploy a dev-model in a test-environment](https://aws.amazon.com/it/premiumsupport/knowledge-center/sagemaker-cross-account-model/)
-To deploy the model to the test account, the engineer must first create an AWS KMS customer master key (CMK) for the SageMaker training job in the development account and link it to the test account. Then, an IAM role also needs to be created in the test account. This role requires SageMaker access and access to the training job output S3 bucket and CMK which are both in the development account. The output S3 bucket policy also needs to be updated to allow access from the test account. Finally, create the Amazon SageMaker deployment model, endpoint configuration, and endpoint from the test account.
 
 ### SageMaker Data Wrangler
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
 
 Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL).
-
-### [Train SageMaker Models Using Data NOT from S3](https://www.slideshare.net/AmazonWebServices/train-models-on-amazon-sagemaker-using-data-not-from-amazon-s3-aim419-aws-reinvent-2018)
-Generally, you cannot directly load data from an RDS or DynamoDB without first staging the data in S3. One possible solution would be to use AWS Glue to perform ETL preprocessing and output data into an S3. Another solution can involve AWS Data Pipeline.
-
 
 ### SageMaker Feature Store
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
@@ -161,15 +158,35 @@ In order to restrict access to the S3 bucket you have to use **bucket policies**
 
 A VPC endpoint for Amazon S3 is a logical entity within a VPC that allows connectivity only to Amazon S3. The VPC endpoint routes requests to Amazon S3 and routes responses back to the VPC.
 
+### [Pipe Input mode](https://aws.amazon.com/it/blogs/machine-learning/using-pipe-input-mode-for-amazon-sagemaker-algorithms/)
+SageMaker Pipe Mode is an input mechanism for SageMaker training containers based on Linux named pipes. SageMaker makes the data available to the training container using named pipes, which allows data to be downloaded from S3 to the container while training is running. For larger datasets, this dramatically improves the time to start training, as the data does not need to be first downloaded to the container. 
+
+### [Train SageMaker Models Using Data NOT from S3](https://www.slideshare.net/AmazonWebServices/train-models-on-amazon-sagemaker-using-data-not-from-amazon-s3-aim419-aws-reinvent-2018)
+Generally, you cannot directly load data from an RDS or DynamoDB without first staging the data in S3. One possible solution would be to use AWS Glue to perform ETL preprocessing and output data into an S3. Another solution can involve AWS Data Pipeline.
+
+### [SageMaker Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-whatis.html) 
+SageMaker Projects help organizations set up and standardize developer environments for data scientists and CI/CD systems for MLOps engineers. You can provision SageMaker Projects from the [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)) using custom or SageMaker-provided templates. The templates include projects that use AWS-native services for CI/CD, such as AWS CodeBuild, AWS CodePipeline, and AWS CodeCommit. The templates also offer the option to create projects that use third-party tools, such as Jenkins and GitHub. 
+
+![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/projects/projects-ml-workflow.png)
+
+A typical project with a SageMaker-provided template might include the following:
+* One or more repositories with sample code to build and deploy ML solutions. These are working examples that you can clone locally and modify for your needs.
+* A SageMaker pipeline that defines steps for data preparation, training, model evaluation, and model deployment, as shown in the following diagram.
+* A CodePipeline or Jenkins pipeline that runs your SageMaker pipeline every time you check in a new version of the code.
+* A model group that contains model versions. Every time you approve the resulting model version from a SageMaker pipeline run, you can deploy it to a SageMaker endpoint.
+
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
 
-### [Autopilot](https://github.com/aws/amazon-sagemaker-examples/blob/main/autopilot/sagemaker_autopilot_direct_marketing.ipynb)
+### [SageMaker Autopilot](https://github.com/aws/amazon-sagemaker-examples/blob/main/autopilot/sagemaker_autopilot_direct_marketing.ipynb)
 Amazon SageMaker Autopilot is an automated machine learning (commonly referred to as AutoML) solution for tabular datasets. It explores your data, selects the algorithms relevant to your problem type, and prepares the data to facilitate model training and tuning. Autopilot applies a cross-validation resampling procedure automatically to all candidate algorithms when appropriate to test their ability to predict data they have not been trained on. It also produces metrics to assess the predictive quality of its machine learning model candidates. It ranks all of the optimized models tested by their performance. It finds the best performing model that you can deploy at a fraction of the time normally required.
 
 Autopilot currently supports regression and binary and multiclass classification problem types. It supports tabular data formatted as **CSV or Parquet** files in which each column contains a feature with a specific data type and each row contains an observation. The column data types accepted include numerical, categorical, text, and time series that consists of strings of comma-separate numbers.
 
 Available algorithms are **Linear Regression, XGBoost, MLP**.
+
+### [Deploy a dev-model in a test-environment](https://aws.amazon.com/it/premiumsupport/knowledge-center/sagemaker-cross-account-model/)
+To deploy the model to the test account, the engineer must first create an AWS KMS customer master key (CMK) for the SageMaker training job in the development account and link it to the test account. Then, an IAM role also needs to be created in the test account. This role requires SageMaker access and access to the training job output S3 bucket and CMK which are both in the development account. The output S3 bucket policy also needs to be updated to allow access from the test account. Finally, create the Amazon SageMaker deployment model, endpoint configuration, and endpoint from the test account.
 
 ### [SageMaker Neo](https://www.amazonaws.cn/en/sagemaker/neo/)
 Amazon SageMaker Neo automatically optimizes machine learning models to perform at up to twice the speed with no loss in accuracy. You start with a machine learning model built using MXNet, TensorFlow, PyTorch, or XGBoost and trained using Amazon SageMaker. Then you choose your target hardware platform from Intel, NVIDIA, or ARM. With a single click, SageMaker Neo will then compile the trained model into an executable. The compiler uses a neural network to discover and apply all of the specific performance optimizations that will make your model run most efficiently on the target hardware platform. The model can then be deployed to start making predictions in the cloud or at the edge. Local compute and ML inference capabilities can be brought to the edge with Amazon IoT Greengrass.
@@ -269,6 +286,11 @@ Autoregressive Integrated Moving Average (ARIMA) is a commonly used statistical 
 
 ### [ETS](https://docs.aws.amazon.com/forecast/latest/dg/aws-forecast-recipe-ets.html)
 Exponential Smoothing (ETS) is a commonly used statistical algorithm for time-series forecasting. The algorithm is especially useful for simple datasets with under 100 time series, and datasets with seasonality patterns. ETS computes a weighted average over all observations in the time series dataset as its prediction, with exponentially decreasing weights over time.
+
+---
+
+## [Amazon Personalize](https://docs.aws.amazon.com/personalize/latest/dg/what-is-personalize.html)
+Amazon Personalize applies machine learning (ML) algorithms to produce personalized recommenders, also known as campaigns, that understand a user’s preferences over time while also adapting to a user’s evolving interests in real time.
 
 ---
 
@@ -373,9 +395,57 @@ Kinesis Firehose should be used instead of Kinesis Data Streams since there are 
 
 ---
 
-## Amazon Athena
+## [Amazon Athena](https://aws.amazon.com/it/blogs/big-data/top-10-performance-tuning-tips-for-amazon-athena/)
+Amazon Athena is an interactive query service that makes it easy to analyze data stored in Amazon Simple Storage Service (Amazon S3) using standard SQL. Athena is serverless, so there is no infrastructure to manage, and you pay only for the queries that you run. Athena is easy to use.
 
-**[Federated query](https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html)** is a new Amazon Athena feature that enables data analysts, engineers, and data scientists to execute SQL queries across data stored in relational, non-relational, object, and custom data sources. With Athena federated query, customers can submit a single SQL query and analyze data from multiple sources running on-premises or hosted on the cloud.
+### [Federated query](https://docs.aws.amazon.com/athena/latest/ug/connect-to-a-data-source.html) 
+This feature enables data analysts, engineers, and data scientists to execute SQL queries across data stored in relational, non-relational, object, and custom data sources. With Athena federated query, customers can submit a single SQL query and analyze data from multiple sources running on-premises or hosted on the cloud.
+
+### [Partitioning data in Athena](https://docs.aws.amazon.com/athena/latest/ug/partitions.html)
+Partitioning divides your table into parts and keeps the related data together based on column values such as date, country, and region. Partitions act as virtual columns. You define them at table creation, and they can help reduce the amount of data scanned per query, thereby improving performance. You can restrict the partitions that are scanned in a query by using the column in the ‘WHERE’ clause. 
+
+>Partitioning has a cost. As the number of partitions in your table increases, the higher the overhead of retrieving and processing the partition metadata, and the smaller your files. Partitioning too finely can wipe out the initial benefit.
+>> If your data is heavily skewed to one partition value, and most queries use that value, then the overhead may wipe out the initial benefit.
+>>>If your table stored in an AWS Glue Data Catalog has tens and hundreds of thousands and millions of partitions, you can enable partition indexes on the table. With partition indexes, only the metadata for the partition value in the query’s filter is retrieved from the catalog instead of retrieving all the partitions’ metadata. The result is faster queries for such highly partitioned tables.
+
+Another way to partition your data is to **bucket the data** within a single partition. With bucketing, you can specify one or more columns containing rows that you want to group together, and put those rows into multiple buckets. This allows you to query only the bucket that you need to read when the bucketed columns value is specified, which can dramatically reduce the number of rows of data to read, which in turn reduces the cost of running the query.
+
+>When you’re selecting a column to be used for bucketing, we recommend that you select one that has high cardinality, and that is frequently used to filter the data read during query time. An example of a good column to use for bucketing would be a primary key, such as a user ID for systems.
+>> To use bucketed tables within Athena, you must use Apache Hive to create the data files because Athena doesn’t support the Apache Spark bucketing format.
+
+### [Compression](https://docs.aws.amazon.com/athena/latest/ug/compression-formats.html)
+
+Compressing your data can speed up your queries significantly, as long as the files are either of an optimal size, or the files are splittable. The smaller data sizes reduce the data scanned from Amazon S3, resulting in lower costs of running queries. It also reduces the network traffic from Amazon S3 to Athena.
+
+The following table summarizes the compression format support in Athena for each storage file format.
+
+|Codec | AVRO	| ORC	| Parquet	| TSV, CSV, JSON, SerDes (for text) |
+|---|---|---|---|---|
+|BZIP2	|Read support only. Write not supported.|	No	|No	|Yes|
+|DEFLATE	|Yes	|No	|No	|No|
+|GZIP	|No	|No	|Yes|	Yes|
+|LZ4	|No	|Yes (raw/unframed)	|No|	Hadoop-compatible read support. No write support.|
+|LZO	|No	|No	|Yes	|Hadoop-compatible read support. No write support.|
+|SNAPPY	|Raw/unframed read support. Write not supported.|	Yes (raw/unframed)|	Yes (raw/unframed)|	Yes (Hadoop-compatible framing)|
+|ZLIB	|No	|Yes	|No	|No|
+|ZSTD	|No	|Yes	|Yes	|Yes|
+
+A **splittable** file can be read in parallel by the execution engine in Athena, whereas an unsplittable file can’t be read in parallel. This means less time is taken in reading a splittable file as compared to an unsplittable file. **AVRO, Parquet, and Orc are splittable irrespective of the compression codec used**. For text files, only files compressed with BZIP2 and LZO codec are splittable.
+
+> You can compress your existing dataset using AWS Glue ETL jobs, Spark or Hive on Amazon EMR, or CTAS or INSERT INTO and UNLOAD statements in Athena.
+
+### [Athena UNLOAD for ML and ETL Pipelines](https://aws.amazon.com/it/blogs/big-data/simplify-your-etl-and-ml-pipelines-using-the-amazon-athena-unload-feature/)
+By default, Athena automatically writes SELECT query results in CSV format to Amazon S3. However, you might often have to write SELECT query results in non-CSV files such as JSON, Parquet, and ORC for various use cases.
+
+CSV is the only output format used by the Athena SELECT query, but you can use UNLOAD to write the output of a SELECT query to the formats and compression that UNLOAD supports. When you use UNLOAD in a SELECT query statement, it writes the results into Amazon S3 in specified data formats of Apache Parquet, ORC, Apache Avro, TEXTFILE, and JSON **without creating an associated table**.
+
+**ML Pipelines**: Analysts and data scientists rely on Athena for ad hoc SQL queries, data discovery, and analysis. They often like to quickly create derived columns such as aggregates or other features. These need to be written as files in Amazon S3 so a downstream ML model can directly read the files without having to rely on a table. You can also parametrize queries using Athena prepared statements that are repetitive. Using the UNLOAD statement in a prepared statement provides the self-service capability to less technical users or analysts and data scientists to export files needed for their downstream analysis without having to write queries. **The output is written as Parquet files in Amazon S3 for a downstream SageMaker model training job to consume.**
+
+**Event-Driven ETL**: Step Functions is integrated with the Athena console to facilitate building workflows that include Athena queries and data processing operations. 
+
+![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2022/04/25/BDB-1919-image001.png)
+
+In this use case, we provide an example query result in Parquet format for downstream consumption. In this example, the raw data is in TSV format and gets ingested on a daily basis. We use the Athena UNLOAD statement to convert the data into Parquet format. After that, we send the location of the Parquet file as an Amazon Simple Notification Service (Amazon SNS) notification. Downstream applications can be notified via SNS to take further actions. One common example is to initiate a Lambda function that uploads the Athena transformation result into Amazon Redshift.
 
 ---
 
@@ -827,23 +897,24 @@ Data drift fundamentally measures the change in statistical distribution between
 ### KL-Divercence
 KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
 
-![](https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png)
+<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff"/>
 
 ### Population Stability Index
 While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
 
-![](https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png)
+<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff"/>
 
 ### Hypothesis Test
 Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
 
 For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
 
-![](https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png)
+<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff"/>
 
 For a **continuous features** with $F_P$ and $F_Q$ being the empirical cumulative densities, for $P$ and $Q$ respectively, the **Kolmogorov-Smirnov** (KS) test is a nonparametric, i.e. distribution-free, test that compares the empirical cumulative density functions $F_P$ and $F_Q$.
 
-![](https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png)
+<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff"/>
+
 
 For hypothesis test metrics, the trivial solution for setting alert thresholds at the the proper critical values for each test using the traditional α=.05, i.e. 95% confident that any hypothesis metric above the respective critical value suggests significant drift where $Q$ ∼ $P$ is likely false.
 
@@ -866,7 +937,14 @@ The Naive Bayes classifier is a simple probabilistic classifier which is based o
 
 ---
 
-## [Factorization Machines](https://towardsdatascience.com/factorization-machines-for-item-recommendation-with-implicit-feedback-data-5655a7c749db)
+## Recommender Systems
+A recommender system is a set of tools that helps provide users with a personalized experience by predicting user preference amongst a large number of options. [Matrix factorization]((https://towardsdatascience.com/factorization-machines-for-item-recommendation-with-implicit-feedback-data-5655a7c749db)) (MF) is a well-known approach to solving such a problem. Conventional MF solutions exploit explicit feedback in a linear fashion; explicit feedback consists of direct user preferences, such as ratings for movies on a five-star scale or binary preference on a product (like or not like). However, explicit feedback isn’t always present in datasets. 
+### [Neural Collaborative Filtering on SageMaker](https://aws.amazon.com/it/blogs/machine-learning/building-a-customized-recommender-system-in-amazon-sagemaker/)
+Neural Collaborative Filtering (NCF) solves the absence of explicit feedback by only using implicit feedback, which is derived from user activity, such as clicks and views. In addition, NCF utilizes multi-layer perceptron to introduce non-linearity into the solution.
+
+An NCF model contains two intrinsic sets of network layers: embedding and NCF layers. You use these layers to build a neural matrix factorization solution with two separate network architectures, generalized matrix factorization (GMF) and multi-layer perceptron (MLP), whose outputs are then concatenated as input for the final output layer.
+
+![](https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2020/08/20/customized-recommender-sagemaker-1.jpg)
 
 ---
 
@@ -879,13 +957,17 @@ A confusion matrix  is a performance measurement for machine learning classifica
 
 ### Statistics on Confusion Matrix
 
+---
 $$Precision = \frac{TP}{TP+FP} $$
+---
 $$Recall = \frac{TP}{TP+FN} $$
+---
 $$FPR = \frac{FP}{FP+TN} $$
+---
 $$Accuracy = \frac{TP+TN}{Total} $$
+---
 $$F_{score} = \frac{2*Recall*Precision}{Recall+Precision} $$
-
-
+---
 
 ### [Receiver Operating Characteristic Curve](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
 An ROC curve is a graph showing the performance of a classification model **at all classification thresholds**. This curve plots two parameters: **Recall(TPR) and FPR**
