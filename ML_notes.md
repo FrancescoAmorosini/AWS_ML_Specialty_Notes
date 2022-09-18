@@ -143,13 +143,6 @@ If you need different functionality, you can bring your own custom images to Stu
 ### [PrivateLink](https://aws.amazon.com/it/blogs/machine-learning/secure-prediction-calls-in-amazon-sagemaker-with-aws-privatelink/)
 Amazon SageMaker now supports Amazon Virtual Private Cloud (VPC) Endpoints via AWS PrivateLink so you can initiate prediction calls to your machine learning models hosted on Amazon SageMaker inside your VPC, without going over the internet. With AWS PrivateLink support, the SageMaker Runtime API can be called through an interface endpoint within the VPC instead of connecting over the internet. Since the communication between the client application and the SageMaker Runtime API is inside the VPC, there is no need for an Internet Gateway, a NAT device, a VPN connection, or AWS Direct Connect.
 
-### [Gateway Endpoints for Amazon S3](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html#vpc-endpoints-s3-bucket-policies)
-You can access Amazon S3 from your VPC using gateway VPC endpoints. After you create the gateway endpoint, you can add it as a target in your route table for traffic destined from your VPC to Amazon S3.
-
-In order to restrict access to the S3 bucket you have to use **bucket policies**. You can deny all traffic except for specific VPC Endpoint, VPC, IP address range, AWS Account, AWS IAM Roles.
-
-A VPC endpoint for Amazon S3 is a logical entity within a VPC that allows connectivity only to Amazon S3. The VPC endpoint routes requests to Amazon S3 and routes responses back to the VPC.
-
 ### [Connect SageMaker Notebook with External Resources](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html)
 By default, SageMaker Studio provides a network interface that allows communication with the internet through a VPC managed by SageMaker. Traffic to AWS services like Amazon S3 and CloudWatch goes through an internet gateway, as does traffic that accesses the SageMaker API and SageMaker runtime. Traffic between the domain and your Amazon EFS volume goes through the VPC that you specified when you onboarded to Studio or called the CreateDomain API.
 
@@ -158,6 +151,15 @@ By default, SageMaker Studio provides a network interface that allows communicat
 To prevent SageMaker from providing internet access to your Studio notebooks, you can disable internet access by specifying the *"VPC only"* network access. As a result, you won't be able to run a Studio notebook unless your VPC has an interface endpoint to the SageMaker API and runtime, or a NAT gateway with internet access, and your security groups allow outbound connections. 
 
 ![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-private.png)
+
+[The notebook instance has a variety of networking configurations available to it.](https://aws.amazon.com/it/blogs/machine-learning/understanding-amazon-sagemaker-notebook-instance-networking-configurations-and-advanced-routing-options/)
+
+### [Gateway Endpoints for Amazon S3](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html#vpc-endpoints-s3-bucket-policies)
+You can access Amazon S3 from your VPC using gateway VPC endpoints. After you create the gateway endpoint, you can add it as a target in your route table for traffic destined from your VPC to Amazon S3.
+
+In order to restrict access to the S3 bucket you have to use **bucket policies**. You can deny all traffic except for specific VPC Endpoint, VPC, IP address range, AWS Account, AWS IAM Roles.
+
+A VPC endpoint for Amazon S3 is a logical entity within a VPC that allows connectivity only to Amazon S3. The VPC endpoint routes requests to Amazon S3 and routes responses back to the VPC.
 
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
