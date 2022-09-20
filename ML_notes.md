@@ -2,27 +2,30 @@
 ## Table of Contents
 
 - [AWS Machine Learning Specialty Notes](#aws-machine-learning-specialty-notes)
+  - [Table of Contents](#table-of-contents)
 - [Amazon Web Services](#amazon-web-services)
   - [Amazon SageMaker](#amazon-sagemaker)
     - [Elastic Inference](#elastic-inference)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
-    - [SageMaker Data Wrangler](#amazon-sagemaker-data-wrangler)
-    - [SageMaker Feature Store](#amazon-sagemaker-feature-store)
+    - [SageMaker Data Wrangler](#sagemaker-data-wrangler)
+    - [SageMaker Feature Store](#sagemaker-feature-store)
     - [Available Amazon SageMaker Images](#available-amazon-sagemaker-images)
     - [PrivateLink](#privatelink)
     - [Connect SageMaker Notebook with External Resources](#connect-sagemaker-notebook-with-external-resources)
     - [Gateway Endpoints for Amazon S3](#gateway-endpoints-for-amazon-s3)
     - [Pipe Input mode](#pipe-input-mode)
     - [Train SageMaker Models Using Data NOT from S3](#train-sagemaker-models-using-data-not-from-s3)
+    - [Data Formats for Inference](#data-formats-for-inference)
     - [SageMaker Projects](#sagemaker-projects)
     - [SageMaker Experiments](#sagemaker-experiments)
     - [SageMaker Autopilot](#sagemaker-autopilot)
-    - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environmen)
+    - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environment)
     - [SageMaker Neo](#sagemaker-neo)
-    - [SageMaker GroudTruth](#sagemaker-groundtruth)
+    - [SageMaker Groundtruth](#sagemaker-groundtruth)
     - [SageMaker Clarify](#sagemaker-clarify)
     - [SageMaker Hosting Services](#sagemaker-hosting-services)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
+    - [Amazon Comprehend on Amazon SageMaker Notebooks](#amazon-comprehend-on-amazon-sagemaker-notebooks)
   - [Amazon Forecast](#amazon-forecast)
     - [CNN-QR](#cnn-qr)
     - [DeepAR+](#deepar)
@@ -31,15 +34,15 @@
     - [ARIMA](#arima)
     - [ETS](#ets)
   - [Amazon Personalize](#amazon-personalize)
-  - [AWS Lake Formation](#aws-lake-formation)
   - [AWS Data Pipeline](#aws-data-pipeline)
+  - [AWS Lake Formation](#aws-lake-formation)
   - [Amazon Kinesis](#amazon-kinesis)
   - [AWS Glue](#aws-glue)
   - [Amazon QuickSight](#amazon-quicksight)
     - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
     - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
   - [Amazon Redshift](#amazon-redshift)
-  - [Amazon Kinesis](#amazon-kinesis)
+  - [Amazon Kinesis](#amazon-kinesis-1)
   - [Amazon Athena](#amazon-athena)
     - [Federated query](#federated-query)
     - [Partitioning data in Athena](#partitioning-data-in-athena)
@@ -64,15 +67,16 @@
     - [Weight of Evidence Encoding](#weight-of-evidence-encoding)
     - [Hashing](#hashing)
     - [James-Stein Encoding](#james-stein-encoding)
-- [Word Embeddings](#word-embeddings)
-  - [Bag of Words](#bag-of-words)
-    - [N-Grams](#n-grams)
-    - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
-    - [Scoring Words: Hashing](#scoring-words-hashing)
-    - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
-  - [Word2Vec](#word2vec)
-    - [Common Bag of Words](#cbow)
-    - [Skip-gram](#skip-gram)
+  - [Word Embeddings](#word-embeddings)
+    - [Bag of Words](#bag-of-words)
+      - [N-grams](#n-grams)
+      - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
+      - [Scoring Words: Hashing](#scoring-words-hashing)
+      - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
+      - [Limitations of BoW](#limitations-of-bow)
+    - [Word2Vec](#word2vec)
+      - [CBOW](#cbow)
+      - [Skip-Gram](#skip-gram)
   - [Class Imbalance](#class-imbalance)
     - [Sampling Techniques](#sampling-techniques)
   - [Correlation Analysis](#correlation-analysis)
@@ -90,12 +94,13 @@
   - [Spark](#spark)
   - [Securing Sensitive Information in AWS Data Stores](#securing-sensitive-information-in-aws-data-stores)
 - [Model Selection](#model-selection)
-  - [Feature Combination](#feature-combination)
-  - [Batch Size](#batch-size)
-  - [Drift](#drift)
-    - [KL-Divergence](#kl-divercence)
-    - [Population Stability Index](#population-stability-index)
-    - [Hypothesis Test](#hypothesis-test)
+  - [Hyperparameter Tuning](#hyperparameter-tuning)
+    - [Feature Combination](#feature-combination)
+    - [Batch Size](#batch-size)
+    - [Drift](#drift)
+      - [KL-Divercence](#kl-divercence)
+      - [Population Stability Index](#population-stability-index)
+      - [Hypothesis Test](#hypothesis-test)
   - [Naive Bayes](#naive-bayes)
   - [Support Vector Machines](#support-vector-machines)
   - [Recommender Systems](#recommender-systems)
@@ -163,6 +168,25 @@ SageMaker Pipe Mode is an input mechanism for SageMaker training containers base
 
 ### [Train SageMaker Models Using Data NOT from S3](https://www.slideshare.net/AmazonWebServices/train-models-on-amazon-sagemaker-using-data-not-from-amazon-s3-aim419-aws-reinvent-2018)
 Generally, you cannot directly load data from an RDS or DynamoDB without first staging the data in S3. One possible solution would be to use AWS Glue to perform ETL preprocessing and output data into an S3. Another solution can involve AWS Data Pipeline.
+
+
+### [Data Formats for Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/cdf-inference.html)
+Amazon SageMaker algorithms accept and produce several different MIME types for the HTTP payloads used in retrieving online and mini-batch predictions. You can use various AWS services to transform or preprocess records prior to running inference.
+
+The following table summarizes the accepted *content-type* for performing a *batch transform* on the built-in algorithms:
+
+| Algorithm | ContentType|
+|---|---|
+| DeepAR | application/jsonlines |
+| Factorization Machines | application/json, application/jsonlines, application/x-recordio-protobuf | 
+|IP Insights | text/csv, application/json, application/jsonlines | 
+| K-Means | application/json, application/jsonlines, application/x-recordio-protobuf |
+| KNN | application/json, application/jsonlines, application/x-recordio-protobuf |
+| Linear Learner | application/jsonlines, application/x-recordio-protobuf |
+| NTM | application/json, application/jsonlines, application/x-recordio-protobuf |
+|Object2Vec | application/json |
+| PCA | application/json, application/jsonlines, application/x-recordio-protobuf |
+| RCF | application/json, application/jsonlines, application/x-recordio-protobuf |
 
 ### [SageMaker Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-whatis.html) 
 SageMaker Projects help organizations set up and standardize developer environments for data scientists and CI/CD systems for MLOps engineers. You can provision SageMaker Projects from the [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)) using custom or SageMaker-provided templates. The templates include projects that use AWS-native services for CI/CD, such as AWS CodeBuild, AWS CodePipeline, and AWS CodeCommit. The templates also offer the option to create projects that use third-party tools, such as Jenkins and GitHub. 
@@ -641,7 +665,7 @@ The James-Stein encoder shrinks the average toward the overall average. It is a 
 
 ---
 
-# [Word Embeddings](https://towardsdatascience.com/text-analysis-feature-engineering-with-nlp-502d6ea9225d)
+## [Word Embeddings](https://towardsdatascience.com/text-analysis-feature-engineering-with-nlp-502d6ea9225d)
 
 There are three main step in text preprocessing:
 1. Tokenization
@@ -650,7 +674,7 @@ There are three main step in text preprocessing:
 
 In a nutshell, **tokenization** is about splitting strings of text into smaller pieces, or "tokens". Paragraphs can be tokenized into sentences and sentences can be tokenized into words. **Normalization** aims to put all text on a level playing field, e.g., converting all characters to lowercase. **Noise removal** cleans up the text, e.g., remove extra whitespaces.
 
-## [Bag of Words](https://machinelearningmastery.com/gentle-introduction-bag-words-model/)
+### [Bag of Words](https://machinelearningmastery.com/gentle-introduction-bag-words-model/)
 A bag-of-words model, or BoW for short, is a way of extracting features from text for use in modeling. A bag-of-words is a representation of text that describes the occurrence of words within a document. It involves two things:
 
 1. A Vocabulary of known words.
@@ -660,7 +684,7 @@ In this case the "bag" is a binary vector as long as the vocabulary, where $1$ m
 
 The intuition is that documents are similar if they have similar content. Further, that from the content alone we can learn something about the meaning of the document. As the vocabulary size increases, so does the vector representation of documents. You can imagine that for a very large corpus, such as thousands of books, that the length of the vector might be thousands or millions of positions. Further, each document may contain very few of the known words in the vocabulary.
 
-### [N-grams](https://cran.r-project.org/web/packages/textrecipes/vignettes/Working-with-n-grams.html)
+#### [N-grams](https://cran.r-project.org/web/packages/textrecipes/vignettes/Working-with-n-grams.html)
 A more sophisticated approach is to create a vocabulary of grouped words. This both changes the scope of the vocabulary and allows the bag-of-words to capture a little bit more meaning from the document. 
 
 An N-gram is an N-token sequence of words: a 2-gram (more commonly called a bigram) is a two-word sequence of words like “please turn”, “turn your”, or “your homework”, and a 3-gram (more commonly called a trigram) is a three-word sequence of words like “please turn your”, or “turn your homework”.
@@ -668,15 +692,15 @@ An N-gram is an N-token sequence of words: a 2-gram (more commonly called a bigr
 >Often a simple bigram approach is better than a 1-gram bag-of-words model for tasks like documentation classification.
 >> The N-gram approach shortens the size of the vocabulary, considering at the same time the *order* of the words within n-grams.
 
-### Scoring Words: Count & Frequence
+#### Scoring Words: Count & Frequence
 Once a vocabulary has been chosen, the occurrence of words in example documents needs to be scored. Sometimes using a binary vector as "bag" is not enough, as it does not take into consideration multiple occurrencies of the word. You can use for example the **Count** (number of occurrencies of a given word) or the **Frequency** (the frequency that each word occurs in the document).
 
-### Scoring Words: Hashing
+#### Scoring Words: Hashing
 We can use a hash representation of known words in our vocabulary. This addresses the problem of having a very large vocabulary for a large text corpus because we can choose the size of the hash space, which is in turn the size of the vector representation of the document.
 
 The challenge is to choose a hash space to accommodate the chosen vocabulary size to minimize the probability of collisions and trade-off sparsity.
 
-### Scoring Words: TF-IDF
+#### Scoring Words: TF-IDF
 A problem with scoring word frequency is that highly frequent words start to dominate in the document (e.g. larger score), but may not contain as much “informational content” to the model as rarer but perhaps domain specific words. One approach is to rescale the frequency of words by how often they appear in all documents, so that the scores for frequent words like “the” that are also frequent across all documents are penalized.
 
 This approach to scoring is called Term Frequency – Inverse Document Frequency, or TF-IDF for short, where:
@@ -687,7 +711,7 @@ This approach to scoring is called Term Frequency – Inverse Document Frequency
 > The scores are a weighting where not all words are equally as important or interesting.
 >> Thus the idf of a rare term is high, whereas the idf of a frequent term is likely to be low.
 
-### Limitations of BoW
+#### Limitations of BoW
 The bag-of-words model is very simple to understand and implement and offers a lot of flexibility for customization on your specific text data.
 
 Nevertheless, it suffers from some shortcomings, such as:
@@ -697,10 +721,10 @@ Nevertheless, it suffers from some shortcomings, such as:
 
 ---
 
-## [Word2Vec](https://towardsdatascience.com/introduction-to-word-embedding-and-word2vec-652d0c2060fa)
+### [Word2Vec](https://towardsdatascience.com/introduction-to-word-embedding-and-word2vec-652d0c2060fa)
 Word2Vec is an alternative method to construct an embedding. It can be obtained using two methods (both involving Neural Networks): Skip Gram and Common Bag Of Words (CBOW)
 
-### CBOW
+#### CBOW
 This method takes the context of each word as the input and tries to predict the word corresponding to the context. Consider our example: *Have a great day*.
 
 Let the input to the Neural Network be the word, great. Notice that here we are trying to predict a target word (day) using a single context input word great. More specifically, we use the one hot encoding of the input word and measure the output error compared to one hot encoding of the target word (day). In the process of predicting the target word, we learn the vector representation of the target word.
@@ -709,7 +733,7 @@ Now apply the same process, but using multiple context vectors.
 
 ![](https://miro.medium.com/max/894/0*CCsrTAjN80MqswXG)
 
-### [Skip-Gram](https://towardsdatascience.com/skip-gram-nlp-context-words-prediction-algorithm-5bbf34f84e0c#:~:text=Skip%2Dgram%20is%20one%20of,while%20context%20words%20are%20output.)
+#### [Skip-Gram](https://towardsdatascience.com/skip-gram-nlp-context-words-prediction-algorithm-5bbf34f84e0c#:~:text=Skip%2Dgram%20is%20one%20of,while%20context%20words%20are%20output.)
 Skip-gram is used to predict the context word for a given target word. It’s reverse of CBOW algorithm. 
 
 ![](https://miro.medium.com/max/1050/0*yxs3JKs5bKc4c_i8.png)
@@ -802,6 +826,7 @@ Cramer’s V is used to understand the strength of the relationship between two 
 > If your data are continuous, Pearson Correlation may be more appropriate.
 >> If one of your variables is continuous and the other is binary, you should use Point Biserial Correlation.
 >>> A map of correct statistical tests can be found [HERE](https://www.statstest.com/relationship/).
+
 ---
 
 ## Variance Methods
@@ -871,14 +896,16 @@ An effective strategy for securing sensitive data in the cloud requires a good u
 # Model Selection
 Model selection is the task of selecting a statistical model from a set of candidate models, given data. In the simplest cases, a pre-existing set of data is considered.
 
+## Hyperparameter Tuning
+For large jobs, using **Hyperband** can reduce computation time by utilizing its internal early stopping mechanism, reallocation of resources and ability to run parallel jobs. If runtime and resources are limited, use either **random search** or **Bayesian optimization** instead. Bayesian optimization uses information gathered from prior runs to make increasingly informed decisions about improving hyperparameter configurations in the next run. Because of its sequential nature, Bayesian optimization cannot massively scale. Random search is able to run large numbers of parallel jobs.
 
-## [Feature Combination](https://datascience.stackexchange.com/questions/28883/why-adding-combinations-of-features-would-increase-performance-of-linear-svm)
+When a training job runs on multiple instances, hyperparameter tuning uses the last-reported objective metric value from all instances of that training job as the value of the objective metric for that training job. Design distributed training jobs so that the objective metric reported is the one that you want.
+
+### [Feature Combination](https://datascience.stackexchange.com/questions/28883/why-adding-combinations-of-features-would-increase-performance-of-linear-svm)
 
 Combination of existing features can give new features and help for classification. Polynomial features ( $x^2$, $x^3$, $y^2$, etc.) do not give additional data points, but instead increase the complexity the objective function (which sometimes leads to overfitting). 
 
----
-
-## [Batch Size](https://medium.com/mini-distill/effect-of-batch-size-on-training-dynamics-21c14f7a716e)
+### [Batch Size](https://medium.com/mini-distill/effect-of-batch-size-on-training-dynamics-21c14f7a716e)
 Batch size is one of the most important hyperparameters to tune in modern deep learning systems. Practitioners often want to use a larger batch size to train their model as it allows computational speedups from the parallelism of GPUs. However, it is well known that too large of a batch size will lead to poor generalization. For convex functions that we are trying to optimize, there is an inherent tug-of-war between the benefits of smaller and bigger batch sizes.
 
 This is intuitively explained by the fact that smaller batch sizes allow the model to “start learning before having to see all the data.” The **downside of using a smaller batch size is that the model is not guaranteed to converge to the global optima**. It will bounce around the global optima, staying outside some ϵ-ball of the optima where ϵ depends on the ratio of the batch size to the dataset size. 
@@ -888,23 +915,22 @@ Therefore, under no computational constraints, it is often advised that one star
 >  It has been observed in practice that when using a larger batch there is a significant degradation in the quality of the model, as measured by its ability to generalize.
 >> The presented results confirm that using small batch sizes achieves the best training stability and generalization performance, for a given computational cost, across a wide range of experiments. Nevertheless, the batch size impacts how quickly a model learns and the stability of the learning process.
 
----
-## [Drift](https://towardsdatascience.com/automating-data-drift-thresholding-in-machine-learning-systems-524e6259f59f)
+### [Drift](https://towardsdatascience.com/automating-data-drift-thresholding-in-machine-learning-systems-524e6259f59f)
 Data drift fundamentally measures the change in statistical distribution between two distributions, usually the same feature but at different points in time. There are many different kinds of metrics we could use for quantifying data drift. 
 
 > For any drift metrics, P is the training data (reference set) on which the ML model was trained and Q is the data on which the model is performing predictions (inference set), which can be defined on a rolling time window for streaming models or a batch basis for batch models.
 
-### KL-Divercence
+#### KL-Divercence
 KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
 
 <img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff"/>
 
-### Population Stability Index
+#### Population Stability Index
 While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
 
 <img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff"/>
 
-### Hypothesis Test
+#### Hypothesis Test
 Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
 
 For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
@@ -959,14 +985,19 @@ A confusion matrix  is a performance measurement for machine learning classifica
 
 ---
 $$Precision = \frac{TP}{TP+FP} $$
+
 ---
 $$Recall = \frac{TP}{TP+FN} $$
+
 ---
 $$FPR = \frac{FP}{FP+TN} $$
+
 ---
 $$Accuracy = \frac{TP+TN}{Total} $$
+
 ---
 $$F_{score} = \frac{2*Recall*Precision}{Recall+Precision} $$
+
 ---
 
 ### [Receiver Operating Characteristic Curve](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
