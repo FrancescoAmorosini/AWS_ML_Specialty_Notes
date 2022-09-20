@@ -7,6 +7,7 @@
   - [Amazon SageMaker](#amazon-sagemaker)
     - [Elastic Inference](#elastic-inference)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
+    - [Autoscaling SageMaker Models](#autoscaling-sagemaker-models)
     - [SageMaker Data Wrangler](#sagemaker-data-wrangler)
     - [SageMaker Feature Store](#sagemaker-feature-store)
     - [Available Amazon SageMaker Images](#available-amazon-sagemaker-images)
@@ -47,6 +48,7 @@
     - [Federated query](#federated-query)
     - [Partitioning data in Athena](#partitioning-data-in-athena)
     - [Compression](#compression)
+    - [Athena Data Source Connectors](#athena-data-source-connectors)
     - [Athena UNLOAD for ML and ETL Pipelines](#athena-unload-for-ml-and-etl-pipelines)
   - [Amazon Kendra](#amazon-kendra)
   - [Amazon CodeGuru Reviewer](#amazon-codeguru-reviewer)
@@ -122,13 +124,26 @@ Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput a
 ### [Inter-Container Traffic Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html)
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
 
-### SageMaker Data Wrangler
+### [Autoscaling SageMaker Models](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling.html)
+Amazon SageMaker supports automatic scaling (autoscaling) for your hosted models. Autoscaling dynamically adjusts the number of instances provisioned for a model in response to changes in your workload. 
+
+To specify the metrics and target values for a scaling policy, you configure a target-tracking scaling policy. You can use either a predefined metric or a custom metric.
+
+### [SageMaker Data Wrangler](https://docs.aws.amazon.com/sagemaker/latest/dg/data-wrangler-import.html)
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
 
 Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL).
 
-### SageMaker Feature Store
+>You can use Amazon SageMaker Data Wrangler to import data from the following data sources: Amazon Simple Storage Service (Amazon S3), Amazon Athena, Amazon Redshift, and Snowflake.
+
+### [SageMaker Feature Store](https://docs.aws.amazon.com/sagemaker/latest/dg/feature-store.html)
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
+
+In Feature Store, features are stored in a collection called a *feature group*. You can visualize a feature group as a table in which each column is a feature, with a unique identifier for each row. In principle, a feature group is composed of *features* and values specific to each feature. A *Record*is a collection of values for features that correspond to a unique *RecordIdentifier*. Altogether, a FeatureGroup is a group of features defined in your FeatureStore to describe a Record. 
+
+When feature data is ingested and updated, Feature Store stores historical data for all features in the offline store. For batch ingest, you can pull feature values from your S3 bucket or use Athena to query. You can also use [Data Wrangler](#sagemaker-data-wrangler) to process and engineer new features that can then be exported to a chosen S3 bucket to be accessed by Feature Store. 
+
+Feature generation pipelines can be created to process large batches or small batches, and to write feature data to the offline or online store. Streaming sources such as Amazon Managed Streaming for Apache Kafka or Amazon Kinesis can also be used as data sources from which features are extracted and directly fed to the online store for training, inference, or feature creation.
 
 ### [Available Amazon SageMaker Images](https://docs.aws.amazon.com/sagemaker/latest/dg/notebooks-available-images.html)
 A SageMaker image is a file that identifies the kernels, language packages, and other dependencies required to run a Jupyter notebook in Amazon SageMaker Studio.
@@ -368,6 +383,8 @@ Amazon QuickSight is a cloud-based business intelligence service that provides i
 * Quicksight has an anomaly insights feature, removing the need to write custom code.
 * If you want to use SPICE and you don't have enough space, choose Edit/Preview data. In data preparation, you can remove fields from the data set to decrease its size. You can also apply a filter or write a SQL query that reduces the number of rows or columns returned.
 
+> DynamoDB is not supported as direct data source for QuickSight. You need an intermediary service, such as Athen and its data source connectors.
+
 ### [Amazon QuickSight vs Kibana](https://wisdomplexus.com/blogs/kibana-vs-quicksight/)
 
 Kibana is a visualization tool.
@@ -457,6 +474,10 @@ The following table summarizes the compression format support in Athena for each
 A **splittable** file can be read in parallel by the execution engine in Athena, whereas an unsplittable file can’t be read in parallel. This means less time is taken in reading a splittable file as compared to an unsplittable file. **AVRO, Parquet, and Orc are splittable irrespective of the compression codec used**. For text files, only files compressed with BZIP2 and LZO codec are splittable.
 
 > You can compress your existing dataset using AWS Glue ETL jobs, Spark or Hive on Amazon EMR, or CTAS or INSERT INTO and UNLOAD statements in Athena.
+
+### [Athena Data Source Connectors](https://docs.aws.amazon.com/athena/latest/ug/connectors-prebuilt.html)
+Athena has a set of data source connectors that you can use to query a variety of data sources external to Amazon S3. Some prebuilt connectors require that you create a VPC and a security group before you can use the connector. To use Athena Federated Query feature with AWS Secrets Manager, you must [configure an Amazon VPC private endpoint for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/vpc-endpoint-overview.html#vpc-endpoint-create).
+
 
 ### [Athena UNLOAD for ML and ETL Pipelines](https://aws.amazon.com/it/blogs/big-data/simplify-your-etl-and-ml-pipelines-using-the-amazon-athena-unload-feature/)
 By default, Athena automatically writes SELECT query results in CSV format to Amazon S3. However, you might often have to write SELECT query results in non-CSV files such as JSON, Parquet, and ORC for various use cases.
