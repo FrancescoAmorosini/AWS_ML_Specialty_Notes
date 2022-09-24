@@ -185,11 +185,11 @@ Amazon SageMaker now supports Amazon Virtual Private Cloud (VPC) Endpoints via A
 ### [Connect SageMaker Notebook with External Resources](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html)
 By default, SageMaker Studio provides a network interface that allows communication with the internet through a VPC managed by SageMaker. Traffic to AWS services like Amazon S3 and CloudWatch goes through an internet gateway, as does traffic that accesses the SageMaker API and SageMaker runtime. Traffic between the domain and your Amazon EFS volume goes through the VPC that you specified when you onboarded to Studio or called the CreateDomain API.
 
-![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-internet.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-internet.png" />
 
 To prevent SageMaker from providing internet access to your Studio notebooks, you can disable internet access by specifying the *"VPC only"* network access. As a result, you won't be able to run a Studio notebook unless your VPC has an interface endpoint to the SageMaker API and runtime, or a NAT gateway with internet access, and your security groups allow outbound connections. 
 
-![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-private.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-private.png" />
 
 [The notebook instance has a variety of networking configurations available to it.](https://aws.amazon.com/it/blogs/machine-learning/understanding-amazon-sagemaker-notebook-instance-networking-configurations-and-advanced-routing-options/)
 
@@ -233,7 +233,7 @@ The following table summarizes the accepted *content-type* for performing a *bat
 ### [SageMaker Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-whatis.html) 
 SageMaker Projects help organizations set up and standardize developer environments for data scientists and CI/CD systems for MLOps engineers. You can provision SageMaker Projects from the [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)) using custom or SageMaker-provided templates. The templates include projects that use AWS-native services for CI/CD, such as AWS CodeBuild, AWS CodePipeline, and AWS CodeCommit. The templates also offer the option to create projects that use third-party tools, such as Jenkins and GitHub. 
 
-![](https://docs.aws.amazon.com/sagemaker/latest/dg/images/projects/projects-ml-workflow.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://docs.aws.amazon.com/sagemaker/latest/dg/images/projects/projects-ml-workflow.png" />
 
 A typical project with a SageMaker-provided template might include the following:
 * One or more repositories with sample code to build and deploy ML solutions. These are working examples that you can clone locally and modify for your needs.
@@ -515,7 +515,7 @@ CSV is the only output format used by the Athena SELECT query, but you can use U
 
 **Event-Driven ETL**: Step Functions is integrated with the Athena console to facilitate building workflows that include Athena queries and data processing operations. 
 
-![](https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2022/04/25/BDB-1919-image001.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://d2908q01vomqb2.cloudfront.net/b6692ea5df920cad691c20319a6fffd7a4a766b8/2022/04/25/BDB-1919-image001.png" />
 
 In this use case, we provide an example query result in Parquet format for downstream consumption. In this example, the raw data is in TSV format and gets ingested on a daily basis. We use the Athena UNLOAD statement to convert the data into Parquet format. After that, we send the location of the Parquet file as an Amazon Simple Notification Service (Amazon SNS) notification. Downstream applications can be notified via SNS to take further actions. One common example is to initiate a Lambda function that uploads the Athena transformation result into Amazon Redshift.
 
@@ -555,14 +555,14 @@ To generate fraud predictions, Amazon Fraud Detector uses machine learning model
 
 ### Box-CoX Transformation 
 The transformation is really a family of transformations indexed by a parameter $\lambda$:
-![](https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D+%5Cdfrac%7By%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26%5Clambda+%5Cneq+0%2C+%5C%5C+%5Clog+y+%26%5Clambda+%3D+0.+%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D+%5Cdfrac%7By%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26%5Clambda+%5Cneq+0%2C+%5C%5C+%5Clog+y+%26%5Clambda+%3D+0.+%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
 
 The parameter $\lambda$ is calculated usin Maximum Likelihood Estimation.
 
 ### Yeo-Johnson Transformation
 Yeo and Johnson note that the tweak above only works when $y$ is bounded from below, and also that standard asymptotic results of maximum likelihood theory may not apply. 
 
-![](https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D++%5Cdfrac%7B%28y%2B1%29%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D%5Clambda+%5Cneq+0%2C+%5C%5C++%5Clog+%28y%2B1%29+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D+%5Clambda+%3D+0%2C+%5C%5C++-%5Cdfrac%7B%28-y+%2B+1%29%5E%7B2+-+%5Clambda%7D+-+1%7D%7B2+-+%5Clambda%7D+%26y+%3C+0+%5Ctext%7B+and+%7D+%5Clambda+%5Cneq+2%2C+%5C%5C++-+%5Clog%28-y+%2B+1%29+%26y+%3C+0%2C+%5Clambda+%3D+2.++%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D++%5Cdfrac%7B%28y%2B1%29%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D%5Clambda+%5Cneq+0%2C+%5C%5C++%5Clog+%28y%2B1%29+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D+%5Clambda+%3D+0%2C+%5C%5C++-%5Cdfrac%7B%28-y+%2B+1%29%5E%7B2+-+%5Clambda%7D+-+1%7D%7B2+-+%5Clambda%7D+%26y+%3C+0+%5Ctext%7B+and+%7D+%5Clambda+%5Cneq+2%2C+%5C%5C++-+%5Clog%28-y+%2B+1%29+%26y+%3C+0%2C+%5Clambda+%3D+2.++%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
 
 The motivation for this transformation is rooted in the concept of relative skewness introduced by [van Zwet (1964)](https://onlinelibrary.wiley.com/doi/abs/10.1002/bimj.19680100134). This transformation has the following properties:
 
@@ -574,7 +574,7 @@ The motivation for this transformation is rooted in the concept of relative skew
 
 ## Imputation Methods for Missing Values
 
-![](https://editor.analyticsvidhya.com/uploads/30381Imputation%20Techniques%20types.JPG)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://editor.analyticsvidhya.com/uploads/30381Imputation%20Techniques%20types.JPG" />
 
 1. **Complete Case Analisys**: This is a quite straightforward method of handling the Missing Data, which directly removes the rows that have missing data i.e we consider only those rows where we have complete data i.e data is not missing. This method is also popularly known as "Listwise deletion".
     * **Assumptions**:
@@ -709,7 +709,7 @@ For feature value, the James-Stein estimator returns a weighted average of:
 
 The James-Stein encoder shrinks the average toward the overall average. It is a target based encoder. James-Stein estimator has, however, one practical limitation - it was defined only for normal distributions.
 
-![](https://miro.medium.com/max/875/0*NBVi7M3sGyiUSyd5.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/875/0*NBVi7M3sGyiUSyd5.png" />
 
 ---
 
@@ -779,12 +779,12 @@ Let the input to the Neural Network be the word, great. Notice that here we are 
 
 Now apply the same process, but using multiple context vectors.
 
-![](https://miro.medium.com/max/894/0*CCsrTAjN80MqswXG)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/894/0*CCsrTAjN80MqswXG" />
 
 #### [Skip-Gram](https://towardsdatascience.com/skip-gram-nlp-context-words-prediction-algorithm-5bbf34f84e0c#:~:text=Skip%2Dgram%20is%20one%20of,while%20context%20words%20are%20output.)
 Skip-gram is used to predict the context word for a given target word. It’s reverse of CBOW algorithm. 
 
-![](https://miro.medium.com/max/1050/0*yxs3JKs5bKc4c_i8.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/1050/0*yxs3JKs5bKc4c_i8.png" />
 
 The word *"sat"* will be given and we’ll try to predict words *"cat"*, *"mat"* at position -1 and 3 respectively given *"sat"* is at position 0 .
 
@@ -814,9 +814,9 @@ Resampling methods are designed to change the composition of a training dataset 
         > Because the procedure only removes so-named "Tomek Links", we would not expect the resulting transformed dataset to be balanced, only less ambiguous along the class boundary.
     * **Edited Nearest Neighbors Rule**: This rule involves using k=3 nearest neighbors to locate those examples in a dataset that are misclassified and that are then removed before a k=1 classification rule is applied. For each instance $a$ in the dataset, its three nearest neighbors are computed. If $a$ is a majority class instance and is misclassified by its three nearest neighbors, then $a$ is removed from the dataset. Alternatively, if $a$ is a minority class instance and is misclassified by its three nearest neighbors, then the majority class instances among a's neighbors are removed.
     * **One-Sided Selection**: One-Sided Selection is an undersampling technique that combines Tomek Links and the Condensed Nearest Neighbor (CNN) Rule. Specifically, Tomek Links are ambiguous points on the class boundary and are identified and removed in the majority class. The CNN method is then used to remove redundant examples from the majority class that are far from the decision boundary.
-    ![](https://machinelearningmastery.com/wp-content/uploads/2019/10/Overview-of-the-One-Sided-Selection-for-Undersampling-Procedure2.png)
+    <img style="background-color:#ffff; text-align:center;" width="700" src="https://machinelearningmastery.com/wp-content/uploads/2019/10/Overview-of-the-One-Sided-Selection-for-Undersampling-Procedure2.png" />
     * **Neighborhood Cleaning Rule**: The Neighborhood Cleaning Rule is an undersampling technique that combines both the Condensed Nearest Neighbor (CNN) Rule to remove redundant examples and the Edited Nearest Neighbors (ENN) Rule to remove noisy or ambiguous examples. Like OSS, the CSS method is applied in a one-step manner, then the examples that are misclassified according to a KNN classifier are removed, as per the ENN rule. Unlike OSS, less of the redundant examples are removed and more attention is placed on "cleaning" those examples that are retained. 
-    ![](https://machinelearningmastery.com/wp-content/uploads/2019/10/Summary-of-the-Neighborhood-Cleaning-Rule-Algorithm.png)
+    <img style="background-color:#ffff; text-align:center;" width="700" src="https://machinelearningmastery.com/wp-content/uploads/2019/10/Summary-of-the-Neighborhood-Cleaning-Rule-Algorithm.png" />
 * [**Oversampling**](https://machinelearningmastery.com/smote-oversampling-for-imbalanced-classification/): One approach to addressing imbalanced datasets is to oversample the minority class. The simplest approach involves duplicating examples in the minority class, although these examples don't add any new information to the model. Instead, new examples can be synthesized from the existing examples. This is a type of data augmentation for the minority class and is referred to as the **Synthetic Minority Oversampling Technique** (SMOTE). SMOTE works by selecting examples that are close in the feature space, drawing a line between the examples in the feature space and drawing a new sample at a point along that line.
     > A general downside of the approach is that synthetic examples are created without considering the majority class, possibly resulting in ambiguous examples if there is a strong overlap for the classes.
     >>We can be selective about the examples in the minority class that are oversampled using SMOTE. Hence we will see some extension to the algorithm.
@@ -885,7 +885,7 @@ PCA is an unsupervised linear dimensionality reduction and data visualization te
 
 PCA tries to preserve the Global Structure of data i.e when converting d-dimensional data to d-dimensional data then it tries to map all the clusters as a whole due to which local structures might get lost. 
 
-![](https://miro.medium.com/max/1100/1*37a_i1t1tDxDYT3ZI6Yn8w.gif)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/1100/1*37a_i1t1tDxDYT3ZI6Yn8w.gif" />
 
 ### [T-Distributed Stochastic Neighbourhood Embedding (t-SNE)](https://www.geeksforgeeks.org/difference-between-pca-vs-t-sne/)
 
@@ -893,12 +893,13 @@ T-SNE is also a unsupervised non-linear dimensionality reduction and data visual
 
 Unlike PCA it tries to preserve the Local structure of data by minimizing the Kullback-Leibler divergence (KL divergence) between the two distributions with respect to the locations of the points in the map.
 
-![](https://habrastorage.org/webt/uc/1k/o6/uc1ko6efgx_d-wnbwolgdabifl8.gif)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://habrastorage.org/webt/uc/1k/o6/uc1ko6efgx_d-wnbwolgdabifl8.gif" />
+
 ### [Linear Discriminant Analysis](https://towardsai.net/p/data-science/lda-vs-pca)
 
 LDA is very similar to PCA , they both look for linear combinations of the features which best explain the data. The main difference is that the Linear discriminant analysis is a supervised dimensionality reduction technique that also achieves classification of the data simultaneously.Linear Discriminant Analysis projects the data points onto new axes such that these new components maximize the separability among categories while keeping the variation within each of the categories at a minimum value. LDA focuses on finding a feature subspace that maximizes the separability between the groups.
 
-![](https://preview.redd.it/easm42h2h2221.gif?width=779&auto=webp&s=67a0d05e1a58a85452cec6fa3999f148339a2dae)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://preview.redd.it/easm42h2h2221.gif?width=779&auto=webp&s=67a0d05e1a58a85452cec6fa3999f148339a2dae" />
 
 >LDA assumes that the independent variables are normally distributed for each of the categories.
 >>LDA assumes the independent variables have equal variances and covariances across all the categories. This can be tested with Box's M statistic $^{1}$. When this assumption fails, another variant of Discriminant analysis is used which is the **Quadratic Discriminant Analysis (QDA)**.
@@ -931,7 +932,7 @@ When a task is **parallelized** in Spark, it means that concurrent tasks may be 
 An effective strategy for securing sensitive data in the cloud requires a good understanding of general data security patterns and a clear mapping of these patterns to cloud security controls. You then can apply these controls to implementation-level details specific to data stores such as Amazon Relational Database Service (Amazon RDS) and Amazon DynamoDB. 
 
 1. **Classify data based on their confidentiality**.
-![](https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2019/04/12/BestPracticesSensitiveData1_2.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://d2908q01vomqb2.cloudfront.net/887309d048beef83ad3eabf2a79a64a389ab1c9f/2019/04/12/BestPracticesSensitiveData1_2.png" />
 
 2. **Consider how and from where data can be accessed**.  security zone provides a well-defined network perimeter that implements controls to help protect all assets within it. A security zone also enables clarity and ease of reasoning for defining and enforcing network flow control into and out of the security zone based on its characteristics. You can define a network flow control policy through AWS network access control lists (ACLs) in combination with a complementary IAM policy. With these, you enforce access to the secured zone only from the restricted zone and never from the internet-facing external zone. This approach places your sensitive data two security layers beneath internet accessibility.
 
@@ -973,23 +974,23 @@ Data drift fundamentally measures the change in statistical distribution between
 #### KL-Divercence
 KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
 
-<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff; text-align:center;" width="700"/>
+<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff; text-align:center;" width="700" />
 
 #### Population Stability Index
 While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
 
-<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff; text-align:center;"  width="700"/>
+<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff; text-align:center;"  width="700" />
 
 #### Hypothesis Test
 Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
 
 For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
 
-<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff; text-align:center;"width="700"/>
+<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff; text-align:center;" width="700" />
 
 For a **continuous features** with $F_P$ and $F_Q$ being the empirical cumulative densities, for $P$ and $Q$ respectively, the **Kolmogorov-Smirnov** (KS) test is a nonparametric, i.e. distribution-free, test that compares the empirical cumulative density functions $F_P$ and $F_Q$.
 
-<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff; text-align:center;" width="700"/>
+<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff; text-align:center;" width="700" />
 
 
 For hypothesis test metrics, the trivial solution for setting alert thresholds at the the proper critical values for each test using the traditional α=.05, i.e. 95% confident that any hypothesis metric above the respective critical value suggests significant drift where $Q$ ∼ $P$ is likely false.
@@ -1012,7 +1013,7 @@ The Xavier Initialization method is calculated as a random number with a **unifo
 
 We can see that with very few inputs, the range is large, such as between -1 and 1 or -0.7 to -7. We can then see that our range rapidly drops to about 20 weights to near -0.1 and 0.1, where it remains reasonably constant.
 
-![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred-.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred-.png" />
 
 > This is not alwasys desirable, in which case there is a normalized version of Xavier Initialization
 
@@ -1020,7 +1021,7 @@ The **Normalized Xavier Initialization** method is calculated as a random number
 
 We can see that the range starts wide at about -0.3 to 0.3 with few inputs and reduces to about -0.1 to 0.1 as the number of inputs increases.
 
-![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Normalized-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Normalized-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png" />
 
 Compared to the non-normalized version in the previous section, the range is initially smaller, although transitions to the compact range at a similar rate.
 
@@ -1031,7 +1032,7 @@ The He Initialization method is calculated as a random number with a **Gaussian 
 
 We can see that with very few inputs, the range is large, near -1.5 and 1.5 or -1.0 to -1.0. We can then see that our range rapidly drops to about 20 weights to near -0.1 and 0.1, where it remains reasonably constant.
 
-![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-He-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-He-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png" />
 
 We can see that the range of the weights is close to the theoretical range of about -1.788 and 1.788, which is four times the standard deviation, capturing 99.7% of observations in the Gaussian distribution.
 
@@ -1154,7 +1155,7 @@ To combine the robustness of rprop (by just using sign of the gradient), efficie
 >>If we have two coordinates — one that has always big gradients and one that has small gradients we’ll be diving by the corresponding big or small number so we accelerate movement among small direction, and in the direction where gradients are large we’re going to slow down as we divide by some large number.
 >>> Over the course of the training, steps get smaller and smaller, because we keep updating the squared grads growing over training. So we divide by the larger number every time. In the convex optimization, this makes a lot of sense, because when we approach minina we want to slow down.
 
-![](https://miro.medium.com/max/786/0*o9jCrrX4umP7cTBA)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/786/0*o9jCrrX4umP7cTBA" />
 
 ---
 
@@ -1169,7 +1170,7 @@ Neural Collaborative Filtering (NCF) solves the absence of explicit feedback by 
 
 An NCF model contains two intrinsic sets of network layers: embedding and NCF layers. You use these layers to build a neural matrix factorization solution with two separate network architectures, generalized matrix factorization (GMF) and multi-layer perceptron (MLP), whose outputs are then concatenated as input for the final output layer.
 
-![](https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2020/08/20/customized-recommender-sagemaker-1.jpg)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2020/08/20/customized-recommender-sagemaker-1.jpg" />
 
 ---
 
@@ -1178,7 +1179,7 @@ An NCF model contains two intrinsic sets of network layers: embedding and NCF la
 ## Confusion Matrix
 A confusion matrix  is a performance measurement for machine learning classification problem where output can be two or more classes. It is extremely useful for measuring Recall, Precision, Specificity, Accuracy, and most importantly AUC-ROC curves.
 
-![](https://miro.medium.com/max/445/1*Z54JgbS4DUwWSknhDCvNTQ.png)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/445/1*Z54JgbS4DUwWSknhDCvNTQ.png" />
 
 ### Statistics on Confusion Matrix
 
@@ -1202,7 +1203,7 @@ $$F_{score} = \frac{2*Recall*Precision}{Recall+Precision} $$
 ### [Receiver Operating Characteristic Curve](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
 An ROC curve is a graph showing the performance of a classification model **at all classification thresholds**. This curve plots two parameters: **Recall(TPR) and FPR**
 
-![](https://developers.google.com/static/machine-learning/crash-course/images/ROCCurve.svg)
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://developers.google.com/static/machine-learning/crash-course/images/ROCCurve.svg" />
 
 An ROC curve plots TPR vs. FPR at different classification thresholds. To compute the points in an ROC curve, we could evaluate a model many times with different classification thresholds, but this would be inefficient. Fortunately, there's an efficient, sorting-based algorithm that can provide this information for us, called **Area Under (ROC) Curve**.
 
