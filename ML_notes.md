@@ -103,6 +103,9 @@
       - [KL-Divercence](#kl-divercence)
       - [Population Stability Index](#population-stability-index)
       - [Hypothesis Test](#hypothesis-test)
+  - [Weight Initialization](#weight-initialization)
+    - [Xavier: Weight Initialization for Sigmoid and Tanh](#xavier-weight-initialization-for-sigmoid-and-tanh)
+    - [He: Weight Initialization for ReLu](#he-weight-initialization-for-relu)
   - [Naive Bayes](#naive-bayes)
   - [Support Vector Machines](#support-vector-machines)
   - [Recommender Systems](#recommender-systems)
@@ -128,6 +131,8 @@ SageMaker automatically encrypts machine learning data and related artifacts in 
 Amazon SageMaker supports automatic scaling (autoscaling) for your hosted models. Autoscaling dynamically adjusts the number of instances provisioned for a model in response to changes in your workload. 
 
 To specify the metrics and target values for a scaling policy, you configure a target-tracking scaling policy. You can use either a predefined metric or a custom metric.
+
+> Updating an endpoint with a new configuration will not automatically enable the autoscaling! The correct procedure is: De-register the endpoint as a scalable target, update the endpoint configuration, register the endpoint as scalable again.
 
 ### [SageMaker Data Wrangler](https://docs.aws.amazon.com/sagemaker/latest/dg/data-wrangler-import.html)
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
@@ -968,6 +973,43 @@ For hypothesis test metrics, the trivial solution for setting alert thresholds a
 Hypothesis tests, however, come with limitations, from sample sizes influencing significance for the Chi-Squared test to sensitivity in the center of the distribution rather than the tails for the KS test.
 
 That's why we need Automated Drift Threshold, which can be obtained via **Bootstrapping** or **Closed-Forms Statistics**.
+
+---
+
+## [Weight Initialization](https://www.deeplearning.ai/ai-notes/initialization/index.html)
+
+Neural network models are fit using an optimization algorithm called s*tochastic gradient descent* that incrementally changes the network weights to minimize a loss function. This optimization algorithm requires a starting point in the space of possible weight values from which to begin the optimization process. Weight initialization is a procedure to set the weights of a neural network to small random values that define the starting point for the optimization (learning or training) of the neural network model.
+
+These modern weight initialization techniques are divided based on the type of activation function used in the nodes that are being initialized, such as “S*igmoid and Tanh*” and *“ReLU*.”
+
+### [Xavier: Weight Initialization for Sigmoid and Tanh](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/)
+
+The Xavier Initialization method is calculated as a random number with a **uniform probability distribution** ( $U$ ) between the range $-(\frac{1}{\sqrt{n}})$ and $(\frac{1}{\sqrt{n}})$ , where $n$ is the number of inputs to the node.
+
+We can see that with very few inputs, the range is large, such as between -1 and 1 or -0.7 to -7. We can then see that our range rapidly drops to about 20 weights to near -0.1 and 0.1, where it remains reasonably constant.
+
+![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred-.png)
+
+> This is not alwasys desirable, in which case there is a normalized version of Xavier Initialization
+
+The **Normalized Xavier Initialization** method is calculated as a random number with a **uniform probability distribution** ( $U$ ) between the range $-(\frac{\sqrt{6}}{\sqrt{n+m}})$ and $(\frac{\sqrt{6}}{\sqrt{n+m}})$ , where $n$ us the number of inputs to the node (e.g. number of nodes in the previous layer) and $m$ is the number of outputs from the layer (e.g. number of nodes in the current layer).
+
+We can see that the range starts wide at about -0.3 to 0.3 with few inputs and reduces to about -0.1 to 0.1 as the number of inputs increases.
+
+![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-Normalized-Xavier-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png)
+
+Compared to the non-normalized version in the previous section, the range is initially smaller, although transitions to the compact range at a similar rate.
+
+### [He: Weight Initialization for ReLu](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/)
+The Xavier Initialization was found to have problems when used to initialize networks that use the rectified linear (ReLU) activation function.
+
+The He Initialization method is calculated as a random number with a **Gaussian probability distribution** ($G$) with a *mean* of $0.0$ and a *standard deviation* of $\sqrt{2/n}$, where $n$ is the number of inputs to the node.
+
+We can see that with very few inputs, the range is large, near -1.5 and 1.5 or -1.0 to -1.0. We can then see that our range rapidly drops to about 20 weights to near -0.1 and 0.1, where it remains reasonably constant.
+
+![](https://machinelearningmastery.com/wp-content/uploads/2021/01/Plot-of-Range-of-He-Weight-Initialization-with-Inputs-from-One-to-One-Hundred.png)
+
+We can see that the range of the weights is close to the theoretical range of about -1.788 and 1.788, which is four times the standard deviation, capturing 99.7% of observations in the Gaussian distribution.
 
 ---
 
