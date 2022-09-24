@@ -973,23 +973,23 @@ Data drift fundamentally measures the change in statistical distribution between
 #### KL-Divercence
 KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
 
-<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff; text-align:center;; text-align:center;"/>
+<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff; text-align:center;" width="700"/>
 
 #### Population Stability Index
 While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
 
-<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff; text-align:center;"/>
+<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff; text-align:center;"  width="700"/>
 
 #### Hypothesis Test
 Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
 
 For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
 
-<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff; text-align:center;"/>
+<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff; text-align:center;"width="700"/>
 
 For a **continuous features** with $F_P$ and $F_Q$ being the empirical cumulative densities, for $P$ and $Q$ respectively, the **Kolmogorov-Smirnov** (KS) test is a nonparametric, i.e. distribution-free, test that compares the empirical cumulative density functions $F_P$ and $F_Q$.
 
-<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff; text-align:center;"/>
+<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff; text-align:center;" width="700"/>
 
 
 For hypothesis test metrics, the trivial solution for setting alert thresholds at the the proper critical values for each test using the traditional α=.05, i.e. 95% confident that any hypothesis metric above the respective critical value suggests significant drift where $Q$ ∼ $P$ is likely false.
