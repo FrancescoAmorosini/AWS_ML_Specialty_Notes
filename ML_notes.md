@@ -121,6 +121,7 @@
     - [AdaGrad](#adagrad)
     - [AdaDelta](#adadelta)
     - [Adam](#adam)
+    - [RMSProp](#rmsprop)
   - [Support Vector Machines](#support-vector-machines)
   - [Recommender Systems](#recommender-systems)
     - [Neural Collaborative Filtering on SageMaker](#neural-collaborative-filtering-on-sagemaker)
@@ -1128,6 +1129,23 @@ It is an extension of AdaGrad which tends to remove the decaying learning Rate p
 
 ### Adam
 Adam (Adaptive Moment Estimation) works with momentums of first and second order. The intuition behind the Adam is that we don’t want to roll so fast just because we can jump over the minimum, we want to decrease the velocity a little bit for a careful search. In addition to storing an exponentially decaying average of past squared gradients like AdaDelta, Adam **also keeps an exponentially decaying average of past gradients** $M(t)$ . This method converges very rapidly, without going through the trouble of having vanishing learning rates and high variance. On the other side, it's even more computationally expensive than AdaDelta.
+
+### [RMSProp](https://towardsdatascience.com/understanding-rmsprop-faster-neural-network-learning-62e116fcf29a)
+
+RMSprop is an unpublished optimization algorithm designed for neural networks, first proposed by Geoff Hinton in lecture 6 of the online course [“Neural Networks for Machine Learning”](https://www.coursera.org/learn/neural-networks/home/welcome).
+RMSprop lies in the realm of adaptive learning rate methods, which have been growing in popularity in recent years. It’s famous for not being published, yet being very well-known.
+
+Let’s start with understanding **rprop**: it tries to resolve the problem that gradients may vary widely in magnitudes. Some gradients may be tiny and others may be huge, which result in very difficult problem — trying to find a single global learning rate for the algorithm. Rprop combines the idea of only using the sign of the gradient (used in full-batch learning) with the idea of adapting the step size individually for each weight. o, instead of looking at the magnitude of the gradient, we’ll look at the step size that’s defined for that particular weight. And that step size adapts individually over time, so that we accelerate learning in the direction that we need.
+
+Rprop doesn’t really work when we have very large datasets and need to perform mini-batch weights updates. The reason it doesn’t work is that it violates the central idea behind stochastic gradient descent, which is when we have small enough learning rate, it averages the gradients over successive mini-batches.
+
+To combine the robustness of rprop (by just using sign of the gradient), efficiency we get from mini-batches, and averaging over mini-batches which allows to combine gradients in the right way, we must look at rprop from different perspective. Rprop is equivalent of using the gradient but also dividing by the size of the gradient, so we get the same magnitude no matter how big a small that particular gradient is. The problem with mini-batches is that we divide by different gradient every time, so why not force the number we divide by to be similar for adjacent mini-batches ? The central idea of RMSprop is **keep the moving average of the squared gradients for each weight**. And then we divide the gradient by square root the mean square. Which is why it’s called RMSprop(root mean square).
+
+>Adagrad is adaptive learning rate algorithms that looks a lot like RMSprop. Adagrad adds element-wise scaling of the gradient based on the historical sum of squares in each dimension. This means that we keep a running sum of squared gradients. And then we adapt the learning rate by dividing it by that sum.
+>>If we have two coordinates — one that has always big gradients and one that has small gradients we’ll be diving by the corresponding big or small number so we accelerate movement among small direction, and in the direction where gradients are large we’re going to slow down as we divide by some large number.
+>>> Over the course of the training, steps get smaller and smaller, because we keep updating the squared grads growing over training. So we divide by the larger number every time. In the convex optimization, this makes a lot of sense, because when we approach minina we want to slow down.
+
+![](https://miro.medium.com/max/786/0*o9jCrrX4umP7cTBA)
 
 ---
 
