@@ -1,5 +1,7 @@
 # AWS Machine Learning Specialty Notes
+
 ## Table of Contents
+
 
 - [AWS Machine Learning Specialty Notes](#aws-machine-learning-specialty-notes)
   - [Table of Contents](#table-of-contents)
@@ -212,16 +214,21 @@ The following table summarizes the accepted *content-type* for performing a *bat
 
 | Algorithm              | ContentType                                                              |
 | ---------------------- | ------------------------------------------------------------------------ |
-| DeepAR                 | application/jsonlines                                                    |
-| Factorization Machines | application/json, application/jsonlines, application/x-recordio-protobuf |
-| IP Insights            | text/csv, application/json, application/jsonlines                        |
-| K-Means                | application/json, application/jsonlines, application/x-recordio-protobuf |
-| KNN                    | application/json, application/jsonlines, application/x-recordio-protobuf |
-| Linear Learner         | application/jsonlines, application/x-recordio-protobuf                   |
-| NTM                    | application/json, application/jsonlines, application/x-recordio-protobuf |
-| Object2Vec             | application/json                                                         |
-| PCA                    | application/json, application/jsonlines, application/x-recordio-protobuf |
-| RCF                    | application/json, application/jsonlines, application/x-recordio-protobuf |
+| DeepAR                 | `application/jsonlines`                                                    |
+| Factorization Machines | `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+| IP Insights            | `text/csv`, `application/json`, `application/jsonlines`                        |
+| K-Means                | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+| KNN                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+| Linear Learner         | `text/csv`, `application/jsonlines`, `application/x-recordio-protobuf`                   |
+| NTM                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+| Object2Vec             | `application/json`                                                         |
+| PCA                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+| RCF                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
+|XGboost |`text/csv`, `text/libsvm`,  |
+| Object Detection Algorithm | `application/x-image`, `application/x-recordio`, `image/jpeg`, `image/png` |
+|Semantic Segmentation | `application/x-image`, `image/jpeg`, `image/png` |
+
+> **IMP:** Many Amazon SageMaker algorithms support training with data in CSV format. To use data in CSV format for training, in the input data channel specification, specify `text/csv` as the ContentType. **Amazon SageMaker requires that a CSV file does not have a header record and that the target variable is in the first column**. To run unsupervised learning algorithms that don't have a target, specify the number of label columns in the content type. For example, in this case `content_type=text/csv;label_size=0`. 
 
 ### [SageMaker Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-whatis.html) 
 SageMaker Projects help organizations set up and standardize developer environments for data scientists and CI/CD systems for MLOps engineers. You can provision SageMaker Projects from the [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)) using custom or SageMaker-provided templates. The templates include projects that use AWS-native services for CI/CD, such as AWS CodeBuild, AWS CodePipeline, and AWS CodeCommit. The templates also offer the option to create projects that use third-party tools, such as Jenkins and GitHub. 
@@ -878,18 +885,20 @@ PCA is an unsupervised linear dimensionality reduction and data visualization te
 
 PCA tries to preserve the Global Structure of data i.e when converting d-dimensional data to d-dimensional data then it tries to map all the clusters as a whole due to which local structures might get lost. 
 
+![](https://miro.medium.com/max/1100/1*37a_i1t1tDxDYT3ZI6Yn8w.gif)
+
 ### [T-Distributed Stochastic Neighbourhood Embedding (t-SNE)](https://www.geeksforgeeks.org/difference-between-pca-vs-t-sne/)
 
 T-SNE is also a unsupervised non-linear dimensionality reduction and data visualization technique. The math behind t-SNE is quite complex but the idea is simple. It embeds the points from a higher dimension to a lower dimension trying to preserve the neighborhood of that point.
 
 Unlike PCA it tries to preserve the Local structure of data by minimizing the Kullback-Leibler divergence (KL divergence) between the two distributions with respect to the locations of the points in the map.
 
-
+![](https://habrastorage.org/webt/uc/1k/o6/uc1ko6efgx_d-wnbwolgdabifl8.gif)
 ### [Linear Discriminant Analysis](https://towardsai.net/p/data-science/lda-vs-pca)
 
 LDA is very similar to PCA , they both look for linear combinations of the features which best explain the data. The main difference is that the Linear discriminant analysis is a supervised dimensionality reduction technique that also achieves classification of the data simultaneously.Linear Discriminant Analysis projects the data points onto new axes such that these new components maximize the separability among categories while keeping the variation within each of the categories at a minimum value. LDA focuses on finding a feature subspace that maximizes the separability between the groups.
 
-![](https://cdn-images-1.medium.com/max/434/1*BfrSQg2wZoCHxs89zjcW4w.png)
+![](https://preview.redd.it/easm42h2h2221.gif?width=779&auto=webp&s=67a0d05e1a58a85452cec6fa3999f148339a2dae)
 
 >LDA assumes that the independent variables are normally distributed for each of the categories.
 >>LDA assumes the independent variables have equal variances and covariances across all the categories. This can be tested with Box's M statistic $^{1}$. When this assumption fails, another variant of Discriminant analysis is used which is the **Quadratic Discriminant Analysis (QDA)**.
@@ -964,23 +973,23 @@ Data drift fundamentally measures the change in statistical distribution between
 #### KL-Divercence
 KL Divergence from P to Q is interpreted as the nats of information we expect to lose in using Q instead of P for modeling data X, discretized over probability space K.
 
-<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff"/>
+<img src="https://miro.medium.com/max/927/1*ApXRTQw85xiqutHXGAArwg.png" style="background-color:#ffff; text-align:center;; text-align:center;"/>
 
 #### Population Stability Index
 While KL Divergence is well-known, it’s usually used as a regularizing penalty term in generative models like Variationa Autoencoders. A more appropriate metric that can be used as a distance metric is Population Stability Index (PSI), which measures the roundtrip loss of nats of information we expect to lose from P to Q and then from Q returning back to P.
 
-<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff"/>
+<img src="https://miro.medium.com/max/1050/1*-_2MGjtHHB1S8RscYf9RJg.png" style="background-color:#ffff; text-align:center;"/>
 
 #### Hypothesis Test
 Hypothesis testing uses different tests depending on whether a feature is categorical or continuous. There are a few [divergences families](https://research.wmz.ninja/articles/2018/03/a-brief-list-of-statistical-divergences.html), but the most famous statistical tests are the following:
 
 For a **categorical feature** with $K$ categories, i.e. $K−1$ are the degrees of freedom, where $N_{Pk}$ and $N_{Qk}$ are the count of occurrences of the feature being $k$, with $1≤k≤K$, for $P$ and $Q$ respectively, then the **Chi-squared** test statistic is the summation of the standardized squared differences of expected counts between $P$ and $Q$.
 
-<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff"/>
+<img src="https://miro.medium.com/max/654/1*p8I9UrEwMjZEFd56zMQc5A.png" style="background-color:#ffff; text-align:center;"/>
 
 For a **continuous features** with $F_P$ and $F_Q$ being the empirical cumulative densities, for $P$ and $Q$ respectively, the **Kolmogorov-Smirnov** (KS) test is a nonparametric, i.e. distribution-free, test that compares the empirical cumulative density functions $F_P$ and $F_Q$.
 
-<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff"/>
+<img src="https://miro.medium.com/max/654/1*P994i1Wv3Gi23LVrLuxBRw.png" style="background-color:#ffff; text-align:center;"/>
 
 
 For hypothesis test metrics, the trivial solution for setting alert thresholds at the the proper critical values for each test using the traditional α=.05, i.e. 95% confident that any hypothesis metric above the respective critical value suggests significant drift where $Q$ ∼ $P$ is likely false.
