@@ -1,9 +1,12 @@
 # AWS Machine Learning Specialty Notes
 
+### [**Medium Cheatsheet**](https://medium.com/swlh/cheat-sheet-for-aws-ml-specialty-certification-e8f9c88566ba)
+
 ## Table of Contents
 
 
 - [AWS Machine Learning Specialty Notes](#aws-machine-learning-specialty-notes)
+    - [**Medium Cheatsheet**](#medium-cheatsheet)
   - [Table of Contents](#table-of-contents)
 - [Amazon Web Services](#amazon-web-services)
   - [Amazon SageMaker](#amazon-sagemaker)
@@ -97,6 +100,12 @@
     - [R-Squared](#r-squared)
   - [Spark](#spark)
   - [Securing Sensitive Information in AWS Data Stores](#securing-sensitive-information-in-aws-data-stores)
+- [Data Visualization](#data-visualization)
+  - [Bar Chart](#bar-chart)
+  - [Histograms](#histograms)
+  - [Stacked Bar Chart](#stacked-bar-chart)
+  - [Grouped Chart](#grouped-chart)
+  - [Dot Plot](#dot-plot)
 - [Model Selection](#model-selection)
   - [Hyperparameter Tuning](#hyperparameter-tuning)
     - [Feature Combination](#feature-combination)
@@ -554,7 +563,8 @@ To generate fraud predictions, Amazon Fraud Detector uses machine learning model
 [The Box-Cox and Yeo-Johnson](https://statisticaloddsandends.wordpress.com/2021/02/19/the-box-cox-and-yeo-johnson-transformations-for-continuous-variables/#:~:text=The%20Box%2DCox%20and%20Yeo%2DJohnson%20transformations%20are%20two%20different,skew%20in%20the%20raw%20variables.&text=%2C%20making%20it%20easier%20for%20theoretical%20analysis.) transformations are two different ways to transform a continuous (numeric) variable so that the resulting variable looks more normally distributed. They are often used in feature engineering to reduce skew in the raw variables.
 
 ### Box-CoX Transformation 
-The transformation is really a family of transformations indexed by a parameter $\lambda$:
+The transformation is really a family of transformations indexed by a $\lambda$ parameter: 
+
 <img style="background-color:#ffff; text-align:center;" width="600" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D+%5Cdfrac%7By%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26%5Clambda+%5Cneq+0%2C+%5C%5C+%5Clog+y+%26%5Clambda+%3D+0.+%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
 
 The parameter $\lambda$ is calculated usin Maximum Likelihood Estimation.
@@ -944,6 +954,85 @@ An effective strategy for securing sensitive data in the cloud requires a good u
 
 ---
 
+# Data Visualization
+
+Data visualization is the graphical representation of information and data. By using visual elements like charts, graphs, and maps, data visualization tools provide an accessible way to see and understand trends, outliers, and patterns in data. There are various kinds of charts and graphs that are best suited depending on the feature that we want to visualize.
+
+## [Bar Chart](https://chartio.com/learn/charts/bar-chart-complete-guide/)
+A bar chart is used when you want to show a distribution of data points or perform a comparison of metric values across different subgroups of your data. From a bar chart, we can see which groups are highest or most common, and how other groups compare against the others.
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/assets/f7272d/tutorials/charts/bar-charts/4231f2343fb3c86edcd9e468db398d33c18ab1c16c6d38a1afedf0e06ca8fc4d/bar-chart-example-3.png" />
+
+**The primary variable of a bar chart is its categorical variable**. In contrast, **the secondary variable will be numeric in nature**. The secondary variable’s values determine the length of each bar. These values can come from a great variety of sources. In its simplest form, the values may be a simple frequency count or proportion for how much of the data is divided into each category – not an actual data feature at all. Other times, the values may be an average, total, or some other summary measure computed separately for each group.
+
+**Best practices:**
+
+1. Make sure that all of your bars are being plotted against a zero-value baseline.
+2. Maintain rectangular forms for your bars.
+3. Consider the ordering of category levels.
+4. Use color only to highlight specific columns for storytelling.
+5. While the vertical bar chart is usually the default, it’s a good idea to use a horizontal bar chart when you are faced with long category labels.
+6. Include variability whiskers.
+
+## [Histograms](https://chartio.com/learn/charts/histogram-complete-guide/)
+Histograms are a close cousin to bar charts that depict frequency values. While a bar chart’s primary variable is categorical in nature, **a histogram’s primary variable is continuous and numeric**.
+
+Histograms are good for showing general **distributional features** of dataset variables. You can see roughly where the **peaks** of the distribution are, whether the distribution is **skewed**or symmetric, and if there are any **outliers**.
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/assets/6fb4c8/tutorials/charts/histograms/bd0509cd76e528096e481e0a7078d9ddb4a8da50022f947fee4c461d0b40a1fb/histogram-example-1.png" />
+
+Information about the number of **bins** and their boundaries for tallying up the data points is not inherent to the data itself. Instead, setting up the bins is a separate decision that we have to make when constructing a histogram. The way that we specify the bins will have a major effect on how the histogram can be interpreted.
+
+**Best practices:**
+
+1. Use a zero-valued baseline.
+2. Choose an appropriate number of bins.
+3. Choose interpretable bin boundaries. Labels don’t need to be set for every bar, but having them between every few bars helps the reader keep track of value.
+4. While all of the examples so far have shown histograms using bins of equal size, this actually isn’t a technical requirement. When data is sparse, such as when there’s a long data tail, the idea might come to mind to use larger bin widths to cover that space.
+5. Depending on the goals of your visualization, you may want to change the units on the vertical axis of the plot as being in terms of absolute frequency or relative frequency.
+
+## [Stacked Bar Chart](https://chartio.com/learn/charts/stacked-bar-chart-complete-guide/)
+One modification of the standard bar chart is to divide each bar into multiple smaller bars based on values of a **second grouping variable**, called a stacked bar chart.
+
+We want to move to a stacked bar chart when we care about the relative decomposition of each primary bar based on the levels of a second categorical variable. Each bar is now comprised of a number of sub-bars, each one corresponding with a level of a secondary categorical variable. The total length of each stacked bar is the same as before, but now we can see how the secondary groups contributed to that total.
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/assets/9bfb20/tutorials/charts/stacked-bar-charts/073137bf11f1c2226f68c3188128e28d66115622dcdecc9bc208a6d4117f53e8/stacked-bar-example-1.png" />
+
+One important consideration in building a stacked bar chart is to decide which of the two categorical variables will be the primary variable. The most ‘important’ variable should be the primary; use domain knowledge and the specific type of categorical variables to make a decision on how to assign your categorical variables.
+
+**Best practices:**
+
+1. Use a zero-valued baseline.
+2. Ordering of category levels.
+3. Choosing effective colors.
+4. If we want to see the change in a secondary level across the primary categorical variable, this can only be easily done for the level plotted against the baseline.
+5. One way of alleviating the issue of comparing sub-bar sizes from their lengths is to add annotations to each bar indicating its size.
+6. Another common option for stacked bar charts is the percentage, or relative frequency, stacked bar chart.
+
+## [Grouped Chart](https://chartio.com/learn/charts/grouped-bar-chart-complete-guide/)
+A grouped bar chart (aka clustered bar chart, multi-series bar chart) extends the bar chart, **plotting numeric values for levels of two categorical variables instead of one**. Bars are grouped by position for levels of one categorical variable, with color indicating the secondary category level within each group.
+
+A grouped bar chart is used when you want to look at how the second category variable changes within each level of the first, or when you want to look at how the first category variable changes across levels of the second.
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/assets/dfd59f/tutorials/charts/grouped-bar-charts/c1fde6017511bbef7ba9bb245a113c07f8ff32173a7c0d742a4e1eac1930a3c5/grouped-bar-example-1.png" />
+
+It is worth calling out the fact that the grouped bar chart is not well-equipped to compare totals across levels of individual categorical variables. Since there aren’t any native elements for group totals in a grouped bar chart.
+
+**Best practices:**
+
+1. Use a zero-valued baseline.
+2. The principle of ordering bars from largest to smallest unless they have an inherent ordering applies.
+3. Choosing effective colors.
+4. One way of adding totals for the primary categorical variable can come from adding a large bar behind each group or a line chart component above each group.
+5. One use case that *looks* like a grouped bar chart comes from replacing the primary categorical variable with multiple different metrics (*Faceted bar charts*). 
+
+## Dot Plot
+A dot plot is like a bar chart in that it indicates values for different categorical groupings, but encodes values based on a point’s position rather than a bar’s length. Dot plots are useful when you need to compare across categories, but the zero baseline is not informative or useful. 
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/images/tutorials/charts/essential-chart-types/dot-plot.png" />
+
+---
+
 # Model Selection
 Model selection is the task of selecting a statistical model from a set of candidate models, given data. In the simplest cases, a pre-existing set of data is considered.
 
@@ -1155,7 +1244,7 @@ To combine the robustness of rprop (by just using sign of the gradient), efficie
 >>If we have two coordinates — one that has always big gradients and one that has small gradients we’ll be diving by the corresponding big or small number so we accelerate movement among small direction, and in the direction where gradients are large we’re going to slow down as we divide by some large number.
 >>> Over the course of the training, steps get smaller and smaller, because we keep updating the squared grads growing over training. So we divide by the larger number every time. In the convex optimization, this makes a lot of sense, because when we approach minina we want to slow down.
 
-<img style="background-color:#ffff; text-align:center;" width="900" src="https://miro.medium.com/max/786/0*o9jCrrX4umP7cTBA" />
+<img style="background-color:#ffff; text-align:center;" width="700" src="https://miro.medium.com/max/786/0*o9jCrrX4umP7cTBA" />
 
 ---
 
@@ -1179,7 +1268,7 @@ An NCF model contains two intrinsic sets of network layers: embedding and NCF la
 ## Confusion Matrix
 A confusion matrix  is a performance measurement for machine learning classification problem where output can be two or more classes. It is extremely useful for measuring Recall, Precision, Specificity, Accuracy, and most importantly AUC-ROC curves.
 
-<img style="background-color:#ffff; text-align:center;" width="900" src="https://miro.medium.com/max/445/1*Z54JgbS4DUwWSknhDCvNTQ.png" />
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://miro.medium.com/max/445/1*Z54JgbS4DUwWSknhDCvNTQ.png" />
 
 ### Statistics on Confusion Matrix
 
@@ -1203,7 +1292,7 @@ $$F_{score} = \frac{2*Recall*Precision}{Recall+Precision} $$
 ### [Receiver Operating Characteristic Curve](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
 An ROC curve is a graph showing the performance of a classification model **at all classification thresholds**. This curve plots two parameters: **Recall(TPR) and FPR**
 
-<img style="background-color:#ffff; text-align:center;" width="900" src="https://developers.google.com/static/machine-learning/crash-course/images/ROCCurve.svg" />
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://developers.google.com/static/machine-learning/crash-course/images/ROCCurve.svg" />
 
 An ROC curve plots TPR vs. FPR at different classification thresholds. To compute the points in an ROC curve, we could evaluate a model many times with different classification thresholds, but this would be inefficient. Fortunately, there's an efficient, sorting-based algorithm that can provide this information for us, called **Area Under (ROC) Curve**.
 
