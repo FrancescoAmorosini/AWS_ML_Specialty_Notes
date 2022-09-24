@@ -107,6 +107,20 @@
     - [Xavier: Weight Initialization for Sigmoid and Tanh](#xavier-weight-initialization-for-sigmoid-and-tanh)
     - [He: Weight Initialization for ReLu](#he-weight-initialization-for-relu)
   - [Naive Bayes](#naive-bayes)
+  - [Resampling Methods](#resampling-methods)
+    - [Monte Carlo](#monte-carlo)
+    - [Randomization](#randomization)
+    - [Bootstrapping](#bootstrapping)
+    - [Jackknife](#jackknife)
+  - [Optimization Algorithms for Neural Networks](#optimization-algorithms-for-neural-networks)
+    - [Gradient Descent](#gradient-descent)
+    - [Stochastic Gradient Descent](#stochastic-gradient-descent)
+    - [Mini-Batch Gradient Descent](#mini-batch-gradient-descent)
+      - [Momentum](#momentum)
+      - [Nesterov Accelerating Gradient](#nesterov-accelerating-gradient)
+    - [AdaGrad](#adagrad)
+    - [AdaDelta](#adadelta)
+    - [Adam](#adam)
   - [Support Vector Machines](#support-vector-machines)
   - [Recommender Systems](#recommender-systems)
     - [Neural Collaborative Filtering on SageMaker](#neural-collaborative-filtering-on-sagemaker)
@@ -195,18 +209,18 @@ Amazon SageMaker algorithms accept and produce several different MIME types for 
 
 The following table summarizes the accepted *content-type* for performing a *batch transform* on the built-in algorithms:
 
-| Algorithm | ContentType|
-|---|---|
-| DeepAR | application/jsonlines |
-| Factorization Machines | application/json, application/jsonlines, application/x-recordio-protobuf | 
-|IP Insights | text/csv, application/json, application/jsonlines | 
-| K-Means | application/json, application/jsonlines, application/x-recordio-protobuf |
-| KNN | application/json, application/jsonlines, application/x-recordio-protobuf |
-| Linear Learner | application/jsonlines, application/x-recordio-protobuf |
-| NTM | application/json, application/jsonlines, application/x-recordio-protobuf |
-|Object2Vec | application/json |
-| PCA | application/json, application/jsonlines, application/x-recordio-protobuf |
-| RCF | application/json, application/jsonlines, application/x-recordio-protobuf |
+| Algorithm              | ContentType                                                              |
+| ---------------------- | ------------------------------------------------------------------------ |
+| DeepAR                 | application/jsonlines                                                    |
+| Factorization Machines | application/json, application/jsonlines, application/x-recordio-protobuf |
+| IP Insights            | text/csv, application/json, application/jsonlines                        |
+| K-Means                | application/json, application/jsonlines, application/x-recordio-protobuf |
+| KNN                    | application/json, application/jsonlines, application/x-recordio-protobuf |
+| Linear Learner         | application/jsonlines, application/x-recordio-protobuf                   |
+| NTM                    | application/json, application/jsonlines, application/x-recordio-protobuf |
+| Object2Vec             | application/json                                                         |
+| PCA                    | application/json, application/jsonlines, application/x-recordio-protobuf |
+| RCF                    | application/json, application/jsonlines, application/x-recordio-protobuf |
 
 ### [SageMaker Projects](https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-projects-whatis.html) 
 SageMaker Projects help organizations set up and standardize developer environments for data scientists and CI/CD systems for MLOps engineers. You can provision SageMaker Projects from the [AWS Service Catalog](https://docs.aws.amazon.com/servicecatalog/latest/dg/what-is-service-catalog.html)) using custom or SageMaker-provided templates. The templates include projects that use AWS-native services for CI/CD, such as AWS CodeBuild, AWS CodePipeline, and AWS CodeCommit. The templates also offer the option to create projects that use third-party tools, such as Jenkins and GitHub. 
@@ -263,15 +277,15 @@ Kernel SHAP algorithm requires a baseline (also known as background dataset). If
 
 [Available bias metrics are](https://docs.aws.amazon.com/sagemaker/latest/dg/clarify-measure-data-bias.html):
 
-|  Metric |  description  | Use Case  | Range |
-|---|---|---|---|
-| Class Imbalance  | Measures the imbalance in the number of members between different facet values. | Could there be age-based biases due to not having enough data for the demographic outside a middle-aged facet?  |  Normalized range: [-1,+1] |
-| Difference in Proportions of Labels (DPL)  | Measures the imbalance of positive outcomes between different facet values. | Could there be age-based biases in ML predictions due to biased labeling of facet values in the data?  |  Normalized range: [-1,+1] |
-| Kullback-Leibler Divergence (KL)  | Measures how much the outcome distributions of different facets diverge from each other entropically. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
-| Jensen-Shannon Divergence (JS)  | Measures how much the outcome distributions of different facets diverge from each other entropically. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
-| Lp-norm (LP) | Measures a p-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
-| Total Variation Distance (TVD) | Measures half of the L1-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset. | How different are the distributions for loan application outcomes for different demographic groups?  |  Range for binary, multicategory, continuous: [0, +∞) |
-| Conditional Demographic Disparity (CDD) | Measures the disparity of outcomes between different facets as a whole, but also by subgroups. | Do some groups have a larger proportion of rejections for college admission outcomes than their proportion of acceptances?  | Range of CDD: [-1, +1] |
+| Metric                                    | description                                                                                                                                       | Use Case                                                                                                                   | Range                                                |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Class Imbalance                           | Measures the imbalance in the number of members between different facet values.                                                                   | Could there be age-based biases due to not having enough data for the demographic outside a middle-aged facet?             | Normalized range: [-1,+1]                            |
+| Difference in Proportions of Labels (DPL) | Measures the imbalance of positive outcomes between different facet values.                                                                       | Could there be age-based biases in ML predictions due to biased labeling of facet values in the data?                      | Normalized range: [-1,+1]                            |
+| Kullback-Leibler Divergence (KL)          | Measures how much the outcome distributions of different facets diverge from each other entropically.                                             | How different are the distributions for loan application outcomes for different demographic groups?                        | Range for binary, multicategory, continuous: [0, +∞) |
+| Jensen-Shannon Divergence (JS)            | Measures how much the outcome distributions of different facets diverge from each other entropically.                                             | How different are the distributions for loan application outcomes for different demographic groups?                        | Range for binary, multicategory, continuous: [0, +∞) |
+| Lp-norm (LP)                              | Measures a p-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset.            | How different are the distributions for loan application outcomes for different demographic groups?                        | Range for binary, multicategory, continuous: [0, +∞) |
+| Total Variation Distance (TVD)            | Measures half of the L1-norm difference between distinct demographic distributions of the outcomes associated with different facets in a dataset. | How different are the distributions for loan application outcomes for different demographic groups?                        | Range for binary, multicategory, continuous: [0, +∞) |
+| Conditional Demographic Disparity (CDD)   | Measures the disparity of outcomes between different facets as a whole, but also by subgroups.                                                    | Do some groups have a larger proportion of rejections for college admission outcomes than their proportion of acceptances? | Range of CDD: [-1, +1]                               |
 
 
 ### [SageMaker Hosting Services](https://docs.aws.amazon.com/sagemaker/latest/dg/how-it-works-deployment.html)
@@ -283,24 +297,24 @@ After you train your machine learning model, you can deploy it using Amazon Sage
 
 ### [SageMaker Available Algorithms](https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html)
 
-|  Use Case |  ML Problem  | ML Domain  | Algorithms  |
-|---|---|---|---|
-| Spam filter  | Classification  | Supervised  |  AutoGluon-Tabular, CatBoost, FMA, KNN, LightGBM, Linear Learner, TabTransformer, XGBoost |
-| Estimate house value  | Regression  | Supervised  | AutoGluon-Tabular, CatBoost, FMA, KNN, LightGBM, Linear Learner, TabTransformer, XGBoost |
-| Predict sales on historical data | Time series forecasting  | Supervised | DeepAR Forecasting Algorithm |
-|Identify duplicate support tickets or find the correct routing | Embeddings | Supervised | Object2Vec |
-|Drop those columns from a dataset that have a weak relation with the label | Feature engineering | Unsupervised | PCA |
-|Spot when an IoT sensor is sending abnormal readings | Anomaly detection | Unsupervised | Random Cut Forest|
-|Detect if an IP address accessing a service might be from a bad actor | IP anomaly detection | Unsupervised | IP Insights |
-|Group similar objects/data together | Clustering | Unsupervised | K-means |
-|Organize a set of documents into topics | Topic Modeling | Unsupervised | Latent Dirichlet Analysis, Neural-Topic Model|
-|Assign pre-defined categories to documents | Text classification | Textual Analysis | Blazing Text |
-|Convert text from one language to other | Machine translation | Textual Analysis | Seq2Seq |
-|Summarize a long text corpus | Machine translation | Textual Analysis | Seq2Seq |
-|Convert audio files to text | Speech2Text | Textual Analysis | Seq2Seq |
-|Tag an image based on its content | Image Classification | Image Processing |Image Classification |
-|Detect people and objects in an image | Object Detection | Image Processing |Object Detection |
-|Tag every pixel of an image individually with a category | Computer Vision | Image Processing | Semantic Segmentation |
+| Use Case                                                                   | ML Problem              | ML Domain        | Algorithms                                                                               |
+| -------------------------------------------------------------------------- | ----------------------- | ---------------- | ---------------------------------------------------------------------------------------- |
+| Spam filter                                                                | Classification          | Supervised       | AutoGluon-Tabular, CatBoost, FMA, KNN, LightGBM, Linear Learner, TabTransformer, XGBoost |
+| Estimate house value                                                       | Regression              | Supervised       | AutoGluon-Tabular, CatBoost, FMA, KNN, LightGBM, Linear Learner, TabTransformer, XGBoost |
+| Predict sales on historical data                                           | Time series forecasting | Supervised       | DeepAR Forecasting Algorithm                                                             |
+| Identify duplicate support tickets or find the correct routing             | Embeddings              | Supervised       | Object2Vec                                                                               |
+| Drop those columns from a dataset that have a weak relation with the label | Feature engineering     | Unsupervised     | PCA                                                                                      |
+| Spot when an IoT sensor is sending abnormal readings                       | Anomaly detection       | Unsupervised     | Random Cut Forest                                                                        |
+| Detect if an IP address accessing a service might be from a bad actor      | IP anomaly detection    | Unsupervised     | IP Insights                                                                              |
+| Group similar objects/data together                                        | Clustering              | Unsupervised     | K-means                                                                                  |
+| Organize a set of documents into topics                                    | Topic Modeling          | Unsupervised     | Latent Dirichlet Analysis, Neural-Topic Model                                            |
+| Assign pre-defined categories to documents                                 | Text classification     | Textual Analysis | Blazing Text                                                                             |
+| Convert text from one language to other                                    | Machine translation     | Textual Analysis | Seq2Seq                                                                                  |
+| Summarize a long text corpus                                               | Machine translation     | Textual Analysis | Seq2Seq                                                                                  |
+| Convert audio files to text                                                | Speech2Text             | Textual Analysis | Seq2Seq                                                                                  |
+| Tag an image based on its content                                          | Image Classification    | Image Processing | Image Classification                                                                     |
+| Detect people and objects in an image                                      | Object Detection        | Image Processing | Object Detection                                                                         |
+| Tag every pixel of an image individually with a category                   | Computer Vision         | Image Processing | Semantic Segmentation                                                                    |
 
 ### [Amazon Comprehend on Amazon SageMaker Notebooks](https://aws.amazon.com/it/blogs/machine-learning/analyze-content-with-amazon-comprehend-and-amazon-sagemaker-notebooks/)
 Amazon Comprehend takes your unstructured data such as social media posts, emails, webpages, documents, and transcriptions as input. Then it analyzes the input using the power of NLP algorithms to extract key phrases, entities, and sentiments automatically.
@@ -465,16 +479,16 @@ Compressing your data can speed up your queries significantly, as long as the fi
 
 The following table summarizes the compression format support in Athena for each storage file format.
 
-|Codec | AVRO	| ORC	| Parquet	| TSV, CSV, JSON, SerDes (for text) |
-|---|---|---|---|---|
-|BZIP2	|Read support only. Write not supported.|	No	|No	|Yes|
-|DEFLATE	|Yes	|No	|No	|No|
-|GZIP	|No	|No	|Yes|	Yes|
-|LZ4	|No	|Yes (raw/unframed)	|No|	Hadoop-compatible read support. No write support.|
-|LZO	|No	|No	|Yes	|Hadoop-compatible read support. No write support.|
-|SNAPPY	|Raw/unframed read support. Write not supported.|	Yes (raw/unframed)|	Yes (raw/unframed)|	Yes (Hadoop-compatible framing)|
-|ZLIB	|No	|Yes	|No	|No|
-|ZSTD	|No	|Yes	|Yes	|Yes|
+| Codec   | AVRO                                            | ORC                | Parquet            | TSV, CSV, JSON, SerDes (for text)                 |
+| ------- | ----------------------------------------------- | ------------------ | ------------------ | ------------------------------------------------- |
+| BZIP2   | Read support only. Write not supported.         | No                 | No                 | Yes                                               |
+| DEFLATE | Yes                                             | No                 | No                 | No                                                |
+| GZIP    | No                                              | No                 | Yes                | Yes                                               |
+| LZ4     | No                                              | Yes (raw/unframed) | No                 | Hadoop-compatible read support. No write support. |
+| LZO     | No                                              | No                 | Yes                | Hadoop-compatible read support. No write support. |
+| SNAPPY  | Raw/unframed read support. Write not supported. | Yes (raw/unframed) | Yes (raw/unframed) | Yes (Hadoop-compatible framing)                   |
+| ZLIB    | No                                              | Yes                | No                 | No                                                |
+| ZSTD    | No                                              | Yes                | Yes                | Yes                                               |
 
 A **splittable** file can be read in parallel by the execution engine in Athena, whereas an unsplittable file can’t be read in parallel. This means less time is taken in reading a splittable file as compared to an unsplittable file. **AVRO, Parquet, and Orc are splittable irrespective of the compression codec used**. For text files, only files compressed with BZIP2 and LZO codec are splittable.
 
@@ -1019,6 +1033,101 @@ The Naive Bayes classifier is a simple probabilistic classifier which is based o
 * **Bernoulli Naive Bayes**: It assumes that all our features are binary such that they take only two values. Means 0s can represent "word does not occur in the document" and 1s as "word occurs in the document".
 * **Multinomial Naive Bayes**: It is used when we have discrete data (e.g. movie ratings ranging 1 and 5 as each rating will have certain frequency to represent). In text learning we have the count of each word to predict the class or label.
 * **Gaussian Naive Bayes** : Because of the assumption of the normal distribution, Gaussian Naive Bayes is used in cases when all our features are continuous. For example in Iris dataset features are sepal width, petal width, sepal length, petal length. So its features can have different values in data set as width and length can vary. We can't represent features in terms of their occurrences.
+
+---
+
+## [Resampling Methods](http://strata.uga.edu/8370/lecturenotes/resampling.html#:~:text=There%20are%20four%20main%20types,intervals%20on%20a%20parameter%20estimate.)
+
+There are several ways we can run into problems by using traditional parametric and non-parametric statistical methods. For example, our sample size may be too small for the central limit theorem to ensure that sample means are normally distributed, so classically calculated confidence limits may not be accurate. We may not wish to resort to non-parametric tests that have low power. We may be interested in a statistic for which the underlying theoretical distribution is unknown. Without a distribution, we cannot calculate confidence intervals, p-values, or critical values.
+
+Resampling methods are one solution to these problems, and they have several advantages. They are flexible and intuitive. They often have greater power than non-parametric methods, and they approach and sometimes exceed the power of parametric methods. Two of them (bootstrap, jackknife) make no assumptions about the shape of the parent distribution, other than that the sample is a good reflection of that distribution, which it will be if you have gathered a random sample through good sampling design and if your sample size is reasonably large enough. 
+
+There are few drawbacks to resampling methods. The main difficulty is that they can be more difficult to perform than a traditional parametric or non-parametric test.
+
+There are four main types of resampling methods: randomization, Monte Carlo, bootstrap, and jackknife. **These methods can be used to build the distribution of a statistic based on our data, which can then be used to generate confidence intervals on a parameter estimate**.
+
+### Monte Carlo
+Monte Carlo methods are typically used in simulations where the parent distribution is either known or assumed.
+
+For example, suppose we wanted to simulate the distribution of an F-statistic for two samples drawn from a normal distribution. We would specify the mean and variance of the normal distribution, generate two samples of a given size, and calculate the ratio of their variances. We would repeat this process many times to produce a frequency distribution of the F-statistic, from which we could calculate p-values or critical values.
+
+To summarize, there are three steps to a Monte Carlo:
+
+1. Simulate observations based on a theoretical distribution
+2. Repeatedly calculate the statistic of interest to build its distribution based on a null hypothesis
+3. Use the distribution of the statistic to find p-values or critical values.
+
+### Randomization
+Randomization is a simple resampling method, and a thought model illustrates the approach. Suppose we have two samples, A and B, on which we have measured a statistic (the mean, for example). One way to ask if the two samples have significantly different means is to ask how likely we would be to observe their difference of means if the observations had been randomly assigned to the two groups. We could simulate that by randomly assigning each observation to group A or B, calculating the difference of means, and repeating this process until we build up a distribution of the difference in means. By doing this, we are building the distribution of the difference in means under the null hypothesis that the two samples came from one population.
+
+The essential steps in randomization are:
+
+1. Shuffle the observations among the groups.
+2. Repeatedly calculate the statistic of interest.
+3. Use that distribution of the statistic to find critical values or p-values.
+
+### [Bootstrapping](https://machinelearningmastery.com/a-gentle-introduction-to-the-bootstrap-method/)
+
+The principle behind a bootstrap is to draw a set of observations from the data to build up a simulated sample that has the same size as the original sample. This sampling is done with replacement, meaning that a particular observation might get randomly sampled more than once in a particular trial, while others might not get sampled at all. The statistic is calculated on this bootstrapped sample, and this process is repeated many times (thousands of times or more) to build a distribution for the statistic. The mean of these bootstrapped values is the estimate of the parameter.
+
+The distribution of bootstrapped values is used to construct a confidence interval on the parameter estimate. To do this, the bootstrapped values are sorted from lowest to highest. The $1-α/2$ % element (e.g. 0.025%) and the $α/2$ % element (e.g., 0.975%) correspond to the lower and upper confidence limits.
+
+> The reliability of the bootstrap improves with the number of bootstrap replicates.
+
+### Jackknife
+
+The jackknife is another technique for estimating a parameter and placing confidence limits on it. The name refers to cutting the data, because it works by removing a single observation, calculating the statistic without that one value, then repeating that process for each observation.
+
+Specifically, suppose we are interested in parameter $K$, but we have only an estimate of it (the statistic $k$) that is based on our sample of $n$ observations.
+
+To form the first jackknifed sample consisting of $n-1$ observations, remove the first observation in the data. Calculate the statistic (called $k_{-i}$ ) on that sample, where the $-i$ subscript means all of the observations except the ith. From this statistic, calculate a quantity called the pseudovalue $κ_i$ :
+
+$$k_i = k - (n-1)(k_{-i} - k)$$
+
+Repeat this process by replacing the first observation and removing the second observation, to make a new sample of size n-1. Calculate the statistic and pseudovalue as before. Repeat this for every possible observation until there are n pseudovalues, each with sample size size n-1. From these n pseudovalues, we can can estimate the parameter, its standard error, and the confidence interval.
+
+---
+
+## [Optimization Algorithms for Neural Networks](https://towardsdatascience.com/optimizers-for-training-neural-network-59450d71caf6)
+
+Optimizers are algorithms or methods used to change the attributes of your neural network such as weights and learning rate in order to reduce the losses.
+
+### Gradient Descent
+Gradient descent is a first-order optimization algorithm which is dependent on the first order derivative of a loss function. It calculates that which way the weights should be altered so that the function can reach a minima. It's easy to comprehend, implement, and compute.
+
+However, weights are changed after calculating gradient on the whole dataset, which can take a lot of memory and computing time to converge. On top of that, the algorithm might get trapped in local minima.
+
+### Stochastic Gradient Descent
+It's a variation of the Gradient Descent algorithm which **updates the model weights after the computation of each training sample**. This allows models to converge in less time and requires less memory, potentially discovering new minima.
+
+However, this algorithm cause high variance in model parameters, so in general gradually reducing the learning rate is a good practice to achieve similar results to Gradient Descent. Even more, the algorithm has a chance of not stopping even after reaching global minima.
+
+### Mini-Batch Gradient Descent
+It’s best among all the variations of gradient descent algorithms. It is an improvement on both SGD and standard gradient descent. **It updates the model parameters after every batch**. So, the dataset is divided into various batches and after every batch, the parameters are updated. The batch size regulates the trade-off between training time, memory, and weight variance. The optimal batch size is discussed in the [relative section](#batch-size).
+
+>All types of Gradient Descent have some challenges:
+>>1. Choosing an optimum value of the learning rate. If the learning rate is too small than gradient descent may take ages to converge.
+>>2. Have a constant learning rate for all the parameters. There may be some parameters which we may not want to change at the same rate.
+>>3. May get trapped at local minima.
+
+#### Momentum
+**Momentum** was invented for reducing high variance in SGD and softens the convergence. **It accelerates the convergence towards the relevant direction** and reduces the fluctuation to the irrelevant direction. This comes at the cost of one additional hyperparameter to optimize.
+
+#### [Nesterov Accelerating Gradient](https://jlmelville.github.io/mize/nesterov.html)
+The Nesterov Accelerated Gradient method consists of a gradient descent step, followed by something that looks a lot like a momentum term, but isn’t exactly the same as that found in classical momentum. 
+
+The intuition is that the standard momentum method first computes the gradient at the current location and then takes a big jump in the direction of the updated accumulated gradient. In contrast Nesterov momentum first makes a big jump in the direction of the previous accumulated gradient and then measures the gradient where it ends up and makes a correction. The idea being that it is better to correct a mistake after you have made it.
+
+### AdaGrad
+One of the disadvantages of all the optimizers explained is that the learning rate is constant for all parameters and for each cycle. This optimizer **changes the learning rate** that works with the loss function's second gradient. This allows the learning rate to be different for each parameters, which is learned as the training goes and as result better generalizes on sparse data.
+
+However, given the wide use of convex loss functions, the learning rate will always be decrease at each iteration, slowing the convergence in the latest steps. On top of that, the second order derivative is often complicated to calculate.
+
+### AdaDelta
+It is an extension of AdaGrad which tends to remove the decaying learning Rate problem of it. Instead of accumulating all previously squared gradients (which are always $<< 1$ ), **Adadelta limits the window of accumulated past gradients to some fixed size $w$.** In this exponentially moving average is used rather than the sum of all the gradients. This improvement comes at the cost of more computational power needed.
+
+### Adam
+Adam (Adaptive Moment Estimation) works with momentums of first and second order. The intuition behind the Adam is that we don’t want to roll so fast just because we can jump over the minimum, we want to decrease the velocity a little bit for a careful search. In addition to storing an exponentially decaying average of past squared gradients like AdaDelta, Adam **also keeps an exponentially decaying average of past gradients** $M(t)$ . This method converges very rapidly, without going through the trouble of having vanishing learning rates and high variance. On the other side, it's even more computationally expensive than AdaDelta.
 
 ---
 
