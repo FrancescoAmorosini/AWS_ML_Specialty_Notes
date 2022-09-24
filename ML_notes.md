@@ -555,14 +555,14 @@ To generate fraud predictions, Amazon Fraud Detector uses machine learning model
 
 ### Box-CoX Transformation 
 The transformation is really a family of transformations indexed by a parameter $\lambda$:
-<img style="background-color:#ffff; text-align:center;" width="900" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D+%5Cdfrac%7By%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26%5Clambda+%5Cneq+0%2C+%5C%5C+%5Clog+y+%26%5Clambda+%3D+0.+%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D+%5Cdfrac%7By%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26%5Clambda+%5Cneq+0%2C+%5C%5C+%5Clog+y+%26%5Clambda+%3D+0.+%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
 
 The parameter $\lambda$ is calculated usin Maximum Likelihood Estimation.
 
 ### Yeo-Johnson Transformation
 Yeo and Johnson note that the tweak above only works when $y$ is bounded from below, and also that standard asymptotic results of maximum likelihood theory may not apply. 
 
-<img style="background-color:#ffff; text-align:center;" width="900" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D++%5Cdfrac%7B%28y%2B1%29%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D%5Clambda+%5Cneq+0%2C+%5C%5C++%5Clog+%28y%2B1%29+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D+%5Clambda+%3D+0%2C+%5C%5C++-%5Cdfrac%7B%28-y+%2B+1%29%5E%7B2+-+%5Clambda%7D+-+1%7D%7B2+-+%5Clambda%7D+%26y+%3C+0+%5Ctext%7B+and+%7D+%5Clambda+%5Cneq+2%2C+%5C%5C++-+%5Clog%28-y+%2B+1%29+%26y+%3C+0%2C+%5Clambda+%3D+2.++%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://s0.wp.com/latex.php?latex=%5Cbegin%7Baligned%7D+%5Cpsi%28y%2C+%5Clambda%29+%3D+%5Cbegin%7Bcases%7D++%5Cdfrac%7B%28y%2B1%29%5E%5Clambda+-+1%7D%7B%5Clambda%7D+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D%5Clambda+%5Cneq+0%2C+%5C%5C++%5Clog+%28y%2B1%29+%26y+%5Cgeq+0+%5Ctext%7B+and+%7D+%5Clambda+%3D+0%2C+%5C%5C++-%5Cdfrac%7B%28-y+%2B+1%29%5E%7B2+-+%5Clambda%7D+-+1%7D%7B2+-+%5Clambda%7D+%26y+%3C+0+%5Ctext%7B+and+%7D+%5Clambda+%5Cneq+2%2C+%5C%5C++-+%5Clog%28-y+%2B+1%29+%26y+%3C+0%2C+%5Clambda+%3D+2.++%5Cend%7Bcases%7D+%5Cend%7Baligned%7D&bg=ffffff&fg=333333&s=0&c=20201002" />
 
 The motivation for this transformation is rooted in the concept of relative skewness introduced by [van Zwet (1964)](https://onlinelibrary.wiley.com/doi/abs/10.1002/bimj.19680100134). This transformation has the following properties:
 
