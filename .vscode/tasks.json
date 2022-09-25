@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Set Active File",
+            "type": "shell",
+            "command": "code -r ML_notes.md"
+        },
+        {
+            "label": "Save HTML+Math",
+            "command": "${command:extension.saveToHtml}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run All",
+            "command": "${command:extension.liveServer.goOnline}",
+            "dependsOn": [
+                "Set Active File",
+                "Save HTML+Math"
+            ],
+            "problemMatcher": [],
+            "dependsOrder": "sequence"
+        }
+    ]
+}

@@ -7,6 +7,8 @@ While reading through the notes, you should keep in mind that:
 * In spite of the previous point, every section contains at least one hyperlink to articles that I deemed worthy of notice. Such articles are often very detailed and will provide you with the general knowledge on the topic that you might be looking for. Often times, the articles have been ripped off for writing my own notes in order to allow for a faster lookup.
 In general, I suggest you to look for the concerned topic on the Table of Contents, read through the article that I linked, and eventually read my notes that will most likely focus on the most tricky part.
 * Feel free to Fork/PR this repository and contribute with your own notes!
+* [This Markdown render](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one) is suggested for correctly displaying the notes and all the equations.
+* Also, if you have installed the VSCode Extension [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer), you can run a VSCode Task to display the notes in your default browser (`Ctrl+Shift+P` > `Tasks: Run Task` > `Run All`). This will host the notes as a static web page on `http://127.0.0.1:5500`. 
 
 Enjoy your learning! :)
 

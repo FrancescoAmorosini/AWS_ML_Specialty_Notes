@@ -106,6 +106,14 @@
   - [Stacked Bar Chart](#stacked-bar-chart)
   - [Grouped Chart](#grouped-chart)
   - [Dot Plot](#dot-plot)
+  - [Density Curve](#density-curve)
+  - [Line Chart](#line-chart)
+  - [Area Chart](#area-chart)
+  - [Dual-Axis Plot](#dual-axis-plot)
+  - [Scatter Plot](#scatter-plot)
+- [Box Plot](#box-plot)
+  - [Violin Plot](#violin-plot)
+  - [Heatmap](#heatmap)
 - [Model Selection](#model-selection)
   - [Hyperparameter Tuning](#hyperparameter-tuning)
     - [Feature Combination](#feature-combination)
@@ -1029,7 +1037,109 @@ It is worth calling out the fact that the grouped bar chart is not well-equipped
 ## Dot Plot
 A dot plot is like a bar chart in that it indicates values for different categorical groupings, but encodes values based on a point’s position rather than a bar’s length. Dot plots are useful when you need to compare across categories, but the zero baseline is not informative or useful. 
 
-<img style="background-color:#ffff; text-align:center;" width="600" src="https://chartio.com/images/tutorials/charts/essential-chart-types/dot-plot.png" />
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/images/tutorials/charts/essential-chart-types/dot-plot.png" />
+
+## Density Curve
+The density curve, or kernel density estimate, is an alternative way of showing distributions of data instead of the histogram. Rather than collecting data points into frequency bins, each data point contributes a small volume of data whose collected whole becomes the density curve. While density curves may imply some data values that do not exist, they can be a good way to smooth out noise in the data to get an understanding of the distribution signal.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/images/tutorials/charts/essential-chart-types/density-curve.png" />
+
+## [Line Chart](https://chartio.com/learn/charts/line-chart-complete-guide/)
+Line charts show changes in value across continuous measurements, such as those made over time. You will use a line chart when you want to emphasize changes in values for one variable for continuous values of a second variable. On the vertical axis, you will report the value of a second numeric variable for points that fall in each of the intervals defined by the horizontal-axis variable. On the horizontal axis, you need a variable that depicts continuous values that have a regular interval of measurement. Very commonly, this variable is a temporal one.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/f4881f/tutorials/charts/line-charts/0b4bce8f7e41cb75af4713f03e3dc52a0a0fcbf242e95c901204cf24a7cadbfd/line-chart-example-1.png" />
+
+Multiple lines can also be plotted in a single line chart to compare the trend between series. A common use case for this is to observe the breakdown of the data across different subgroups.
+
+**Best practices:**
+
+1. Choose an appropriate measurement interval.
+2. Don’t plot too many lines.
+3. When there aren’t many points to plot, try showing all of the points and not just the line.
+4. Interpolating a curve between points: straight line!!
+5. Avoid using a misleading dual axis. The problem with a dual-axis plot is that it can easily be manipulated to be misleading depending on how each axis is scaled.
+6. Include additional lines to show uncertainty.
+7. A special use case for the line chart is the sparkline. A sparkline is essentially a small line chart, built to be put in line with text or alongside many values in a table. 
+8. One variant chart type for a line chart with multiple lines is the ridgeline plot. In a ridgeline plot, each line is plotted on a different axis, slightly offset from each other vertically. 
+
+## Area Chart
+An area chart starts with the same foundation as a line chart but adds in a concept from the bar chart with shading between the line and a baseline. An area chart is typically used with multiple lines to make a comparison between groups (aka series) or to show how a whole is divided into component parts.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/images/tutorials/charts/essential-chart-types/area-chart.png" />
+
+In the case that we want to compare the values between groups, we end up with an overlapping area chart.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/dc2d28/tutorials/charts/area-charts/ade353b657711fcc4a3163aef7116ff61c918921bc29f99fbe3d0177f2f08b15/area-chart-example-2.png" />
+
+**Best practices:**
+
+1. Include a zero-baseline.
+2. Limit number of series in an overlapping area chart.
+3. Consider order of lines in stacked area chart.
+4. When we just have a single series of values to plot, it is often the wrong choice to use an area chart.
+5. In a stacked area chart, gauging exact values is only really easy for two cases: for the overall total and for the bottommost group.
+6. A common option for area charts is the percentage, or relative frequency, stacked area chart.
+
+## Dual-Axis Plot
+Dual-axis charts overlay two different charts with a shared horizontal axis, but potentially different vertical axis scales (one for each component chart). This can be useful to show a direct comparison between the two sets of vertical values, while also including the context of the horizontal-axis variable. 
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/images/tutorials/charts/essential-chart-types/bar-line-chart.png" />
+
+## Scatter Plot
+A scatter plot uses dots to represent values for two different numeric variables. The position of each dot on the horizontal and vertical axis indicates values for an individual data point. Scatter plots’ primary uses are to observe and show relationships between two numeric variables. The dots in a scatter plot not only report the values of individual data points, but also patterns when the data are taken as a whole.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/a53825/tutorials/charts/scatter-plots/848a5c96881e2e6f1387e74570e16e1fad2559ed65b83aec2a66b7bb86332275/scatter-plot-example-1.png" />
+
+**Best practices:**
+
+1. Don't overplot: When we have lots of data points to plot, this can run into the issue of overplotting. Overplotting is the case where data points overlap to a degree where we have difficulty seeing relationships between points and variables.
+2. Correlation does not imply causation.
+3. Add a trend line.
+4. A common modification of the basic scatter plot is the addition of a third variable. Values of the third variable can be encoded by modifying how the points are plotted (color, shape).
+5. For third variables that have numeric values, a common encoding comes from changing the point size. This is also referred as **bubble chart**. Another option could be to use a colorbar.
+6. Highlight using annotations and color.
+
+# [Box Plot](https://chartio.com/learn/charts/box-plot-complete-guide/)
+A box plot (aka box and whisker plot) uses boxes and lines to depict the distributions of one or more groups of numeric data.  Box plots are used to show distributions of numeric data values, especially when you want to compare them between multiple groups. They are built to provide high-level information at a glance, offering general information about a group of data’s symmetry, skew, variance, and outliers.
+
+On the downside, a box plot’s simplicity also sets limitations on the density of data that it can show. With a box plot, we miss out on the ability to observe the detailed shape of distribution, such as if there are oddities in a distribution’s modality (number of ‘humps’ or peaks) and skew.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/26dba4/tutorials/charts/box-plots/046df50d3e23296f1dda99a385bd54925317c413ffff2a63779ffef0a42b9434/box-plot-construction.png" />
+
+This is drawn by first finding the minimum and maximum values and the **25th, 50th, and 75th percentiles**. The distance between Q3 and Q1 is known as the interquartile range (IQR) and plays a major part in how long the whiskers extending from the box are. Each whisker extends to the furthest data point in each wing that is within 1.5 times the IQR. Any data point further than that distance is considered an **outlier**, and is marked with a dot.
+
+**Best practices:**
+
+1. Compare multiple groups.
+2. Consider the order of groups.
+3.  The horizontal orientation can be a useful format when there are a lot of groups to plot, or if those group names are long.
+4.  Box width can be used as an indicator of how many data points fall into each group.
+
+## [Violin Plot](https://chartio.com/learn/charts/violin-plot-complete-guide/)
+An alternative to the box plot’s approach to comparing value distributions between groups is the violin plot. In a violin plot, each set of box and whiskers is replaced with a density curve (KDE) built around a central baseline. This can provide a better comparison of data shapes between groups, though this does lose out on comparisons of precise statistical values.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/6f4774/tutorials/charts/violin-plots/d317bfe74829d8e85963656bd3e0a245a410e778d9a6b7a33ea6ac767f7422d0/violin-plot-example.png" />
+
+In a KDE, each data point contributes a small area around its true value. The shape of this area is called the kernel function. Kernels can take different shapes from smooth bell curves to sharp triangular peaks. In addition, kernels can have different width, or bandwidth, affecting the influence of each individual data point. This is also how we obtain the [Density Curve](#density-curve)
+
+**Best practices:**
+
+1. Consider the order of groups.
+2. On their own, violin plots can actually be quite limiting. If symmetry, skew, or other shape and variability characteristics are different between groups, it can be difficult to make precise comparisons of density curves between groups. It is for this reason that violin plots are usually rendered with another overlaid with box-plots.
+3. An alternative way of comparing distributions between groups using density curves is with the ridgeline plot.
+
+## Heatmap
+The heatmap presents a grid of values based on two variables of interest. The axis variables can be numeric or categorical; the grid is created by dividing each variable into ranges or levels like a histogram or bar chart. Grid cells are colored based on value, often with darker colors corresponding with higher values. A heatmap can be an interesting alternative to a scatter plot when there are a lot of data points to plot, but the point density makes it difficult to see the true relationship between variables.
+
+<img style="background-color:#ffff; text-align:center;" width="450" src="https://chartio.com/assets/be5311/tutorials/charts/heatmaps/f3fd7308fd47f77d255664010a274a86e84607d00968c27829fb85ca5db2052d/seattle-precip-heatmap.png" />
+
+**Best practices:**
+
+1. Choose an appropriate color palette.
+2. Include a legend.
+3. Show values in cells.
+4. Instead of having the horizontal axis represent levels or values of a single variable, it is a common variation to have it represent measurements of different variables or metrics.
+5. 
 
 ---
 
