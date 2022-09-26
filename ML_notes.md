@@ -41,6 +41,8 @@
     - [ETS](#ets)
   - [Amazon Personalize](#amazon-personalize)
   - [AWS Data Pipeline](#aws-data-pipeline)
+  - [Amazon EMR](#amazon-emr)
+    - [EMRFS](#emrfs)
   - [AWS Lake Formation](#aws-lake-formation)
   - [Amazon Kinesis](#amazon-kinesis)
   - [AWS Glue](#aws-glue)
@@ -382,6 +384,30 @@ AWS Data Pipeline is a web service that you can use to automate the movement and
 * A **pipeline definition** specifies the business logic of your data management.
 * A **pipeline schedules** and runs tasks by creating Amazon EC2 instances to perform the defined work activities.
 * **Task Runner** polls for tasks and then performs those tasks. For example, Task Runner could copy log files to Amazon S3 and launch Amazon EMR clusters. 
+
+---
+
+## [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-what-is-emr.html)
+Amazon EMR is a managed cluster platform that simplifies running big data frameworks, such as Apache Hadoop and Apache Spark, on AWS to process and analyze vast amounts of data. 
+
+The central component of Amazon EMR is the cluster. A cluster is a collection of Amazon Elastic Compute Cloud (Amazon EC2) instances. Each instance in the cluster is called a node. Each node has a role within the cluster, referred to as the node type. Amazon EMR also installs different software components on each node type, giving each node a role in a distributed application like Apache Hadoop.
+
+The node types in Amazon EMR are as follows:
+
+* **Master node**: A node that manages the cluster by running software components to coordinate the distribution of data and tasks among other nodes for processing. The master node tracks the status of tasks and monitors the health of the cluster. Every cluster has a master node, and it's possible to create a single-node cluster with only the master node.
+* **Core node**: A node with software components that run tasks and store data in the Hadoop Distributed File System (HDFS) on your cluster. Multi-node clusters have at least one core node.
+* **Task node**: A node with software components that only runs tasks and does not store data in HDFS. Task nodes are optional.
+
+When you run a cluster on Amazon EMR, you have several options as to how you specify the work that needs to be done.
+
+* Provide the entire definition of the work to be done in functions that you specify as steps when you create a cluster. This is typically done for **clusters that process a set amount of data and then terminate** when processing is complete.
+* Create a **long-running cluster** and use the Amazon EMR console, the Amazon EMR API, or the AWS CLI to submit steps, which may contain one or more jobs.
+* Create a cluster, connect to the master node and other nodes as required using SSH, and use the interfaces that the installed applications provide to perform tasks and submit queries, either scripted or interactively.
+
+### [EMRFS](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-fs.html)
+The EMR File System (EMRFS) is an implementation of HDFS that all Amazon EMR clusters use for reading and writing regular files from Amazon EMR directly to Amazon S3. EMRFS provides the convenience of storing persistent data in Amazon S3 for use with Hadoop while also providing features like data encryption. 
+
+If you delete an object directly from Amazon S3 that EMRFS consistent view tracks, EMRFS treats that object as inconsistent because it is still listed in the metadata as present in Amazon S3. If your metadata becomes out of sync with the objects EMRFS tracks in Amazon S3, you can use the sync sub-command of the EMRFS CLI to reset metadata so that it reflects Amazon S3.
 
 ---
 
@@ -1139,7 +1165,7 @@ The heatmap presents a grid of values based on two variables of interest. The ax
 2. Include a legend.
 3. Show values in cells.
 4. Instead of having the horizontal axis represent levels or values of a single variable, it is a common variation to have it represent measurements of different variables or metrics.
-5. 
+  
 
 ---
 
