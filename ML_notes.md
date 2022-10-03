@@ -12,6 +12,7 @@
   - [Amazon SageMaker](#amazon-sagemaker)
     - [Elastic Inference](#elastic-inference)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
+    - [Network Isolation](#network-isolation)
     - [Autoscaling SageMaker Models](#autoscaling-sagemaker-models)
     - [SageMaker Data Wrangler](#sagemaker-data-wrangler)
     - [SageMaker Feature Store](#sagemaker-feature-store)
@@ -45,7 +46,14 @@
     - [EMRFS](#emrfs)
   - [AWS Lake Formation](#aws-lake-formation)
   - [Amazon Kinesis](#amazon-kinesis)
+    - [Shards](#shards)
   - [AWS Glue](#aws-glue)
+    - [Pushdown Predicates](#pushdown-predicates)
+    - [Partition Predicates (Server-Side Filtering)](#partition-predicates-server-side-filtering)
+    - [SelectField](#selectfield)
+    - [Relationalize](#relationalize)
+    - [Data Brew](#data-brew)
+    - [Pyton Shell Jobs](#pyton-shell-jobs)
   - [Amazon QuickSight](#amazon-quicksight)
     - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
     - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
@@ -64,6 +72,7 @@
   - [Scaling & Normalization](#scaling--normalization)
     - [Box-CoX Transformation](#box-cox-transformation)
     - [Yeo-Johnson Transformation](#yeo-johnson-transformation)
+  - [Log Transformation](#log-transformation)
   - [Imputation Methods for Missing Values](#imputation-methods-for-missing-values)
   - [Variable Enconding](#variable-enconding)
     - [One Hot Encoding](#one-hot-encoding)
@@ -82,7 +91,6 @@
       - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
       - [Scoring Words: Hashing](#scoring-words-hashing)
       - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
-  - [$$idf(\text{“fox”}, D) = log(2/2) = 0$$](#idftextfox-d--log22--0)
       - [Limitations of BoW](#limitations-of-bow)
     - [Word2Vec](#word2vec)
       - [CBOW](#cbow)
@@ -163,6 +171,9 @@ Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput a
 
 ### [Inter-Container Traffic Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html)
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
+
+### [Network Isolation](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html#mkt-algo-model-internet-free-isolation)
+
 
 ### [Autoscaling SageMaker Models](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling.html)
 Amazon SageMaker supports automatic scaling (autoscaling) for your hosted models. Autoscaling dynamically adjusts the number of instances provisioned for a model in response to changes in your workload. 
@@ -423,25 +434,40 @@ You cannot stream data directly to Kinesis Data Analytics, you have to use Kines
 
 Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations.
 
+### Shards
+A Kinesis data stream is a set of **shards**. Each shard has a sequence of **data records**. Each data record has a sequence number that is assigned by Kinesis Data Streams. A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
+
+A stream is composed of one or more shards, each of which provides a fixed unit of capacity. Each shard can support up to **5 transactions per second for reads**, up to a maximum total data read rate of **2 MB** per second and up to **1,000 records per second for writes**, up to a maximum total data write rate of **1 MB** per second (including partition keys).
+
+If your data rate increases, you can increase or decrease the number of shards allocated to your stream.
+
 ---
 
 ## AWS Glue
 
-**[Pushdown Predicates](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html#aws-glue-programming-etl-partitions-pushdowns) (Pre-Filtering)**: In many cases, you can use a pushdown predicate to filter on partitions without having to list and read all the files in your dataset. Instead of reading the entire dataset and then filtering in a DynamicFrame, you can apply the filter directly on the partition metadata in the Data Catalog. Then you only list and read what you actually need into a DynamicFrame. The predicate expression can be any Boolean expression supported by Spark SQL. Anything you could put in a WHERE clause in a Spark SQL query will work.
+### [Pushdown Predicates](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html#aws-glue-programming-etl-partitions-pushdowns) 
+(Pre-Filtering)**: In many cases, you can use a pushdown predicate to filter on partitions without having to list and read all the files in your dataset. Instead of reading the entire dataset and then filtering in a DynamicFrame, you can apply the filter directly on the partition metadata in the Data Catalog. Then you only list and read what you actually need into a DynamicFrame. The predicate expression can be any Boolean expression supported by Spark SQL. Anything you could put in a WHERE clause in a Spark SQL query will work.
 
-**Partition Predicates (Server-Side Filtering)**:The *push_down_predicate* option is applied after listing all the partitions from the catalog and before listing files from Amazon S3 for those partitions. If you have a lot of partitions for a table, catalog partition listing can still incur additional time overhead. To address this overhead, you can use server-side partition pruning with the *catalogPartitionPredicate* option that uses partition indexes in the AWS Glue Data Catalog. This makes partition filtering much faster when you have millions of partitions in one table. You can use both *push_down_predicate* and *catalogPartitionPredicate* in *additional_options* together.
+### Partition Predicates (Server-Side Filtering)
+The *push_down_predicate* option is applied after listing all the partitions from the catalog and before listing files from Amazon S3 for those partitions. If you have a lot of partitions for a table, catalog partition listing can still incur additional time overhead. To address this overhead, you can use server-side partition pruning with the *catalogPartitionPredicate* option that uses partition indexes in the AWS Glue Data Catalog. This makes partition filtering much faster when you have millions of partitions in one table. You can use both *push_down_predicate* and *catalogPartitionPredicate* in *additional_options* together.
 
 > The *push_down_predicate* and *catalogPartitionPredicate* use different syntaxes. The former one uses Spark SQL standard syntax and the later one uses JSQL parser.
 
-**SelectField**: You can create a subset of data property keys from the dataset using the SelectFields transform. You indicate which data property keys you want to keep and the rest are removed from the dataset.
+### SelectField
+You can create a subset of data property keys from the dataset using the SelectFields transform. You indicate which data property keys you want to keep and the rest are removed from the dataset.
 
+### Relationalize
 Glue's **Relationalize** transformation can be used to convert data in a DynamicFrame into a relational data format. Once relationaized, the data can be written to an Amazon Redshift cluster from the Glue job using a JDBC connection.
 
 > GlueTransform is the parent class for all of the AWS Glue Transform classes such as ApplyMapping, Unbox, and Relationize.
 
-**Data Brew**: similar to Sagemaker Data Wrangles, you can run profile job (fully managed) that will give you basic statistics on your data (correlation, statistics, etc). 
+### Data Brew 
+Similar to Sagemaker Data Wrangler, you can run profile job (fully managed) that will give you basic statistics on your data (correlation, statistics, etc). 
 
+> **Glue cannot write the output in RecordIO-Protobuf format!**
 
+### [Pyton Shell Jobs](https://aws.amazon.com/about-aws/whats-new/2019/01/introducing-python-shell-jobs-in-aws-glue/)
+You can now use Python shell jobs, for example, to submit SQL queries to services such as Amazon Redshift, Amazon Athena, or Amazon EMR, or run machine-learning and scientific analyses. Python shell jobs in AWS Glue support scripts that are compatible with Python 2.7 and come pre-loaded with libraries such as the Boto3, NumPy, SciPy, pandas, and others. You can run Python shell jobs using 1 DPU (Data Processing Unit) or 0.0625 DPU (which is 1/16 DPU). A single DPU provides processing capacity that consists of 4 vCPUs of compute and 16 GB of memory.
 
 ---
 
@@ -616,6 +642,13 @@ The motivation for this transformation is rooted in the concept of relative skew
 3. The new transformations on the positive line are equivalent to the Box-Cox transformation for $y > -1$ (after accounting for the constant shift), so the Yeo-Johnson transformation can be viewed as a **generalization of the Box-Cox transformation**.
  
 ---
+
+## [Log Transformation](https://medium.com/@kyawsawhtoon/log-transformation-purpose-and-interpretation-9444b4b049c9)
+Log transformation is a data transformation method in which it replaces each variable $x$ with a $log(x)$.
+
+When our original continuous data do not follow the bell curve, we can log transform this data to make it as “normal” as possible so that the statistical analysis results from this data become more valid. In other words, the log transformation reduces or removes the skewness of our original data. The important caveat here is that **the original data has to follow or approximately follow a log-normal distribution**. Otherwise, the log transformation won’t work.
+
+The Log Transform **decreases the effect of the outliers**, due to the normalization of magnitude differences and the model become more robust. It is commonly used for **reducing right skewness** and is often appropriate for measured variables. It can not be applied to zero or negative values.
 
 ## Imputation Methods for Missing Values
 
@@ -818,6 +851,7 @@ $$tf(\text{“fox”}, d2) = 3/12$$
 
 ---
 $$idf(\text{“fox”}, D) = log(2/2) = 0$$
+
 ---
 
 $$\text{tf-idf}(\text{“fox”}, d1, D) = tf(\text{“fox”}, d1) * idf(\text{“fox”}, D) = (2/12) * 0 = 0 $$
@@ -954,6 +988,10 @@ PCA is an unsupervised linear dimensionality reduction and data visualization te
 PCA tries to preserve the Global Structure of data i.e when converting d-dimensional data to d-dimensional data then it tries to map all the clusters as a whole due to which local structures might get lost. 
 
 <img style="background-color:#ffff; text-align:center;" width="900" src="https://miro.medium.com/max/1100/1*37a_i1t1tDxDYT3ZI6Yn8w.gif" />
+
+In Amazon SageMaker, PCA operates in two modes, depending on the scenario:
+* **Regular**: For datasets with sparse data and a moderate number of observations and features.
+* **Randomized**: For datasets with both a large number of observations and features. This mode uses an approximation algorithm.
 
 ### [T-Distributed Stochastic Neighbourhood Embedding (t-SNE)](https://www.geeksforgeeks.org/difference-between-pca-vs-t-sne/)
 
