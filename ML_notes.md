@@ -35,6 +35,7 @@
     - [Train SageMaker Models Using Data NOT from S3](#train-sagemaker-models-using-data-not-from-s3)
     - [Data Formats for Inference](#data-formats-for-inference)
     - [SageMaker Projects](#sagemaker-projects)
+    - [Inference Pipeline](#inference-pipeline)
     - [SageMaker Experiments](#sagemaker-experiments)
     - [SageMaker Autopilot](#sagemaker-autopilot)
     - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environment)
@@ -44,6 +45,7 @@
     - [SageMaker Hosting Services](#sagemaker-hosting-services)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
     - [Amazon Comprehend on Amazon SageMaker Notebooks](#amazon-comprehend-on-amazon-sagemaker-notebooks)
+    - [Monitoring](#monitoring)
   - [Amazon Forecast](#amazon-forecast)
     - [CNN-QR](#cnn-qr)
     - [DeepAR+](#deepar)
@@ -293,6 +295,13 @@ A typical project with a SageMaker-provided template might include the following
 * A CodePipeline or Jenkins pipeline that runs your SageMaker pipeline every time you check in a new version of the code.
 * A model group that contains model versions. Every time you approve the resulting model version from a SageMaker pipeline run, you can deploy it to a SageMaker endpoint.
 
+### [Inference Pipeline](https://docs.aws.amazon.com/sagemaker/latest/dg/inference-pipelines.html)
+An inference pipeline is a Amazon SageMaker model that is composed of a linear sequence of two to fifteen containers that process requests for inferences on data. You use an inference pipeline to define and deploy any combination of pretrained SageMaker built-in algorithms and your own custom algorithms packaged in Docker containers. You can use an inference pipeline to combine preprocessing, predictions, and post-processing data science tasks. Inference pipelines are fully managed.
+
+The entire assembled inference pipeline can be considered as a SageMaker model that you can use to make either real-time predictions or to process batch transforms directly without any external preprocessing.
+
+
+
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
 
@@ -376,10 +385,24 @@ After you train your machine learning model, you can deploy it using Amazon Sage
 | Detect people and objects in an image                                      | Object Detection        | Image Processing | Object Detection                                                                         |
 | Tag every pixel of an image individually with a category                   | Computer Vision         | Image Processing | Semantic Segmentation                                                                    |
 
+> Deploying a model using SageMaker hosting services is a three-step process with the following steps: Create a model in SageMaker, Create an endpoint configuration for an HTTPS endpoint, Create an HTTPS endpoint.
+
 ### [Amazon Comprehend on Amazon SageMaker Notebooks](https://aws.amazon.com/it/blogs/machine-learning/analyze-content-with-amazon-comprehend-and-amazon-sagemaker-notebooks/)
 Amazon Comprehend takes your unstructured data such as social media posts, emails, webpages, documents, and transcriptions as input. Then it analyzes the input using the power of NLP algorithms to extract key phrases, entities, and sentiments automatically.
 
 You can use the AWS SDK for Python SDK (Boto3) to connect to Amazon Comprehend from your Python code base. You can use the Comprehend API directly from the SageMaker Notebook Instance.
+
+
+### Monitoring
+SageMaker monitoring metrics are available on CloudWatch at a **1-minute frequency**.
+
+CloudWatch keeps the SageMaker monitoring statistics for 15 months. However, the Amazon CloudWatch console limits the search to metrics that were updated in the last 2 weeks.
+
+Monitoring is an important part of maintaining the reliability, availability, and performance of SageMaker. AWS provides the following monitoring tools to watch SageMaker, report when something is wrong, and take automatic actions when appropriate:
+
+**Amazon CloudWatch** monitors your AWS resources and the applications that you run on AWS in real time. You can collect and track metrics, create customized dashboards, and set alarms that notify you or take actions when a specified metric reaches a threshold that you specify. You can further use Amazon CloudWatch Logs and CloudWatch Events to augment your monitoring processes.
+
+**AWS CloudTrail** captures API calls and related events made by or on behalf of your AWS account and delivers the log files to an Amazon S3 bucket that you specify. You can identify which users and accounts called AWS, the source IP address from which the calls were made, and when the calls occurred.
 
 
 ---
