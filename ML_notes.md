@@ -82,6 +82,7 @@
       - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
       - [Scoring Words: Hashing](#scoring-words-hashing)
       - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
+  - [$$idf(\text{“fox”}, D) = log(2/2) = 0$$](#idftextfox-d--log22--0)
       - [Limitations of BoW](#limitations-of-bow)
     - [Word2Vec](#word2vec)
       - [CBOW](#cbow)
@@ -803,6 +804,29 @@ This approach to scoring is called Term Frequency – Inverse Document Frequency
 > The scores are a weighting where not all words are equally as important or interesting.
 >> Thus the idf of a rare term is high, whereas the idf of a frequent term is likely to be low.
 
+**EXAMPLE:**
+
+Document 1 (d1) : *“A quick brown fox jumps over the lazy dog. What a fox!”*
+
+Document 2 (d2) : *“A quick brown fox jumps over the lazy fox. What a fox!”*
+
+---
+$$tf(\text{“fox”}, d1) = 2/12$$
+
+---
+$$tf(\text{“fox”}, d2) = 3/12$$
+
+---
+$$idf(\text{“fox”}, D) = log(2/2) = 0$$
+---
+
+$$\text{tf-idf}(\text{“fox”}, d1, D) = tf(\text{“fox”}, d1) * idf(\text{“fox”}, D) = (2/12) * 0 = 0 $$
+
+---
+
+$$\text{tf-idf}(\text{“fox”}, d2, D) = tf(\text{“fox”}, d2) * idf(\text{“fox”}, D) = (2/12) * 0 = 0 $$
+
+---
 #### Limitations of BoW
 The bag-of-words model is very simple to understand and implement and offers a lot of flexibility for customization on your specific text data.
 
