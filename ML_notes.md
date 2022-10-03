@@ -1,18 +1,29 @@
 # AWS Machine Learning Specialty Notes
 
+## Study Material:
 ### [**Medium Cheatsheet**](https://medium.com/swlh/cheat-sheet-for-aws-ml-specialty-certification-e8f9c88566ba)
+### [**Udemy 3 AWS Exams**](https://www.udemy.com/course/aws-certified-machine-learning-specialty-full-practice-exams/)
+### [**Whizlabs AWS ML Specialty**](https://www.whizlabs.com/learn/course/aws-certified-machine-learning-specialty)
+### [**CloudAcademy AWS ML Specialty Course**](https://cloudacademy.com/learning-paths/aws-machine-learning-specialty-certification-preparation-453/) (don't buy this one, I've wasted 64h of my life.)
+
+---
 
 ## Table of Contents
 
 
 - [AWS Machine Learning Specialty Notes](#aws-machine-learning-specialty-notes)
+  - [Study Material:](#study-material)
     - [**Medium Cheatsheet**](#medium-cheatsheet)
+    - [**Udemy 3 AWS Exams**](#udemy-3-aws-exams)
+    - [**Whizlabs AWS ML Specialty**](#whizlabs-aws-ml-specialty)
+    - [**CloudAcademy AWS ML Specialty Course** (don't buy this one, I've wasted 64h of my life.)](#cloudacademy-aws-ml-specialty-course-dont-buy-this-one-ive-wasted-64h-of-my-life)
   - [Table of Contents](#table-of-contents)
 - [Amazon Web Services](#amazon-web-services)
   - [Amazon SageMaker](#amazon-sagemaker)
     - [Elastic Inference](#elastic-inference)
     - [Inter-Container Traffic Encryption](#inter-container-traffic-encryption)
     - [Network Isolation](#network-isolation)
+    - [Identity Based Policies](#identity-based-policies)
     - [Autoscaling SageMaker Models](#autoscaling-sagemaker-models)
     - [SageMaker Data Wrangler](#sagemaker-data-wrangler)
     - [SageMaker Feature Store](#sagemaker-feature-store)
@@ -160,6 +171,7 @@
     - [Statistics on Confusion Matrix](#statistics-on-confusion-matrix)
     - [Receiver Operating Characteristic Curve](#receiver-operating-characteristic-curve)
   - [Satisficing Metrics](#satisficing-metrics)
+  - [Residual Analysis](#residual-analysis)
 
 
 # Amazon Web Services
@@ -173,7 +185,16 @@ Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput a
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
 
 ### [Network Isolation](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html#mkt-algo-model-internet-free-isolation)
+If you enable network isolation, the containers can't make any outbound network calls, even to other AWS services such as Amazon S3. Additionally, no AWS credentials are made available to the container runtime environment. In the case of a training job with multiple instances, network inbound and outbound traffic is limited to the peers of each training container. SageMaker still performs download and upload operations against Amazon S3 using your SageMaker execution role in isolation from the training or inference container.
 
+Network isolation can be used in conjunction with a VPC. In this scenario, the download and upload of customer data and model artifacts are routed through your VPC subnet. However, the training and inference containers themselves continue to be isolated from the network, and do not have access to any resource within your VPC or on the internet.
+
+### [Identity Based Policies](https://docs.aws.amazon.com/sagemaker/latest/dg/security_iam_service-with-iam.html)
+With IAM identity-based policies, you can specify allowed or denied actions and resources as well as the conditions under which actions are allowed or denied. SageMaker supports specific actions, resources, and condition keys.
+
+>SageMaker does not support resource-based policies.
+
+When you create a notebook instance, processing job, training job, hosted endpoint, or batch transform job resource in SageMaker, you must choose a role to allow SageMaker to access SageMaker on your behalf. If you have previously created a service role or service-linked role, then SageMaker provides you with a list of roles to choose from.
 
 ### [Autoscaling SageMaker Models](https://docs.aws.amazon.com/sagemaker/latest/dg/endpoint-auto-scaling.html)
 Amazon SageMaker supports automatic scaling (autoscaling) for your hosted models. Autoscaling dynamically adjusts the number of instances provisioned for a model in response to changes in your workload. 
@@ -1514,3 +1535,12 @@ AUC isn't a useful metric for anomaly detection.
 
 ## Satisficing Metrics
 You may want to select a classifier that maximizes accuracy, but subject to running time, that is the time it takes to classify an image that must be less than 100 milliseconds or equal to it. That is, it just needs to be nice enough, it just needs to be less than 100 milliseconds and beyond that you just don't care about, or at least you don't care that much. That will therefore be a fairly reasonable way to trade off or put off Both accuracy and running time together.
+
+## [Residual Analysis](https://www.mathworks.com/help/ident/ug/what-is-residual-analysis.html)
+Residuals are differences between the one-step-predicted output from the model and the measured output from the validation data set. Thus, residuals represent the portion of the validation data not explained by the model.
+
+Residual analysis consists of two tests:
+* **Whiteness test criteria**: a good model has the residual autocorrelation function inside the confidence interval of the corresponding estimates, indicating that the residuals are uncorrelated.
+* **Independence test criteria**: a good model has residuals uncorrelated with past inputs. Evidence of correlation indicates that the model does not describe how part of the output relates to the corresponding input. For example, a peak outside the confidence interval for lag k means that the output $y(t)$ that originates from the input $u(t-k)$ is not properly described by the model.
+
+>If the residuals do not form a zero-centered bell shape, there is some structure in the model’s prediction error. Adding more variables to the model might help the model capture the pattern that is not captured by the current model.
