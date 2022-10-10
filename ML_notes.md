@@ -36,6 +36,7 @@
     - [Data Formats for Inference](#data-formats-for-inference)
     - [SageMaker Projects](#sagemaker-projects)
     - [Inference Pipeline](#inference-pipeline)
+    - [SageMaker Automatic Model Tuning](#sagemaker-automatic-model-tuning)
     - [SageMaker Experiments](#sagemaker-experiments)
     - [SageMaker Autopilot](#sagemaker-autopilot)
     - [Deploy a dev-model in a test-environment](#deploy-a-dev-model-in-a-test-environment)
@@ -122,6 +123,7 @@
     - [T-Distributed Stochastic Neighbourhood Embedding (t-SNE)](#t-distributed-stochastic-neighbourhood-embedding-t-sne)
     - [Linear Discriminant Analysis](#linear-discriminant-analysis)
     - [R-Squared](#r-squared)
+  - [Recursive Feature Elimination](#recursive-feature-elimination)
   - [Spark](#spark)
   - [Securing Sensitive Information in AWS Data Stores](#securing-sensitive-information-in-aws-data-stores)
 - [Data Visualization](#data-visualization)
@@ -189,12 +191,14 @@ SageMaker automatically encrypts machine learning data and related artifacts in 
 ### [Network Isolation](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html#mkt-algo-model-internet-free-isolation)
 If you enable network isolation, the containers can't make any outbound network calls, even to other AWS services such as Amazon S3. Additionally, no AWS credentials are made available to the container runtime environment. In the case of a training job with multiple instances, network inbound and outbound traffic is limited to the peers of each training container. SageMaker still performs download and upload operations against Amazon S3 using your SageMaker execution role in isolation from the training or inference container.
 
+>**NOTE:** Amazon SageMaker Reinforcement Learning and Chainer do not support network isolation!
+
 Network isolation can be used in conjunction with a VPC. In this scenario, the download and upload of customer data and model artifacts are routed through your VPC subnet. However, the training and inference containers themselves continue to be isolated from the network, and do not have access to any resource within your VPC or on the internet.
 
 ### [Identity Based Policies](https://docs.aws.amazon.com/sagemaker/latest/dg/security_iam_service-with-iam.html)
 With IAM identity-based policies, you can specify allowed or denied actions and resources as well as the conditions under which actions are allowed or denied. SageMaker supports specific actions, resources, and condition keys.
 
->SageMaker does not support resource-based policies.
+>**NOTE:** Amazon SageMaker does not support resource-based policies! 
 
 When you create a notebook instance, processing job, training job, hosted endpoint, or batch transform job resource in SageMaker, you must choose a role to allow SageMaker to access SageMaker on your behalf. If you have previously created a service role or service-linked role, then SageMaker provides you with a list of roles to choose from.
 
@@ -300,7 +304,14 @@ An inference pipeline is a Amazon SageMaker model that is composed of a linear s
 
 The entire assembled inference pipeline can be considered as a SageMaker model that you can use to make either real-time predictions or to process batch transforms directly without any external preprocessing.
 
+### [SageMaker Automatic Model Tuning](https://docs.aws.amazon.com/sagemaker/latest/dg/automatic-model-tuning.html)
+When you build complex machine learning systems like deep learning neural networks, exploring all of the possible combinations is impractical. Hyperparameter tuning can accelerate your productivity by trying many variations of a model. It looks for the best model automatically by focusing on the most promising combinations of hyperparameter values within the ranges that you specify. It comes in three flavours:
 
+* **Random Search**: When using random search, hyperparameter tuning chooses a random combination of values from within the ranges that you specify for hyperparameters for each training job it launches. Because the choice of hyperparameter values doesn't depend on the results of previous training jobs, you can run the maximum number of concurrent training jobs without affecting the performance of the tuning.
+* **Bayesian Optimization**: Bayesian optimization treats hyperparameter tuning like a regression problem. To solve a regression problem, hyperparameter tuning makes guesses about which hyperparameter combinations are likely to get the best results, and runs training jobs to test these values. After testing a set of hyperparameter values, hyperparameter tuning uses regression to choose the next set of hyperparameter values to test. When choosing the best hyperparameters for the next training job, hyperparameter tuning considers everything that it knows about this problem so far, approaching the problem in an explore/exploit fashion.
+*  **Hyperband**: Hyperband is a multi-fidelity based tuning strategy that dynamically reallocates resources. Hyperband uses both intermediate and final results of training jobs to re-allocate epochs to well-utilized hyperparameter configurations and automatically stops those that underperform. It also seamlessly scales to using many parallel training jobs. These features can significantly speed up hyperparameter tuning over random search and Bayesian optimization strategies.
+
+> **NOTE:** Hyperband should only be used to tune iterative algorithms that publish results at different resource levels.
 
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
@@ -529,7 +540,7 @@ Amazon QuickSight is a cloud-based business intelligence service that provides i
 ### [Amazon QuickSight vs Kibana](https://wisdomplexus.com/blogs/kibana-vs-quicksight/)
 
 Kibana is a visualization tool.
-Volumes of data are initially stored in the formats of index or indices.Mostly these indexes are supported by **Elasticsearch**.
+Volumes of data are initially stored in the formats of index or indices. Mostly these indexes are supported by **Elasticsearch**.
 Indices convert the data into a structured form for Elasticsearch with Logstash or beats that collect the data from log files.
 Results for the data are presented in visualized format through Lens, canvas, and maps.
 
@@ -918,6 +929,8 @@ Nevertheless, it suffers from some shortcomings, such as:
 ### [Word2Vec](https://towardsdatascience.com/introduction-to-word-embedding-and-word2vec-652d0c2060fa)
 Word2Vec is an alternative method to construct an embedding. It can be obtained using two methods (both involving Neural Networks): Skip Gram and Common Bag Of Words (CBOW)
 
+>**NOTE:** For Amazon SageMaker BlazingText (both for Word2Vec and Text Classification variants) the only mandatory hyperparameter si the mode, which can be set to `batch_skipgram`, `skipgram` or `CBOW`. 
+
 #### CBOW
 This method takes the context of each word as the input and tries to predict the word corresponding to the context. Consider our example: *Have a great day*.
 
@@ -1069,6 +1082,13 @@ The actual calculation of R-squared requires several steps. This includes taking
 R-Squared only works as intended in a simple linear regression model with one explanatory variable. With a multiple regression made up of several independent variables, the R-Squared must be **adjusted**. The adjusted R-squared compares the descriptive power of regression models that include diverse numbers of predictors. 
 
 > R-squared will give you an estimate of the relationship between movements of a dependent variable based on an independent variable's movements. It doesn't tell you whether your chosen model is good or bad, nor will it tell you whether the data and predictions are biased.
+
+---
+
+## [Recursive Feature Elimination](https://machinelearningmastery.com/rfe-feature-selection-in-python/)
+RFE is popular because it is easy to configure and use and because it is effective at selecting those features in a training dataset that are more or most relevant in predicting the target variable. There are two important configuration options when using RFE: the choice in the **number of features** to select and the choice of the **algorithm** used to help choose features. 
+
+RFE is a **wrapper-type** feature selection algorithm. This means that a different machine learning algorithm is given and used in the core of the method, is wrapped by RFE, and used to help select features. This is in contrast to filter-based feature selections that score each feature and select those features with the largest score. RFE works by searching for a subset of features by starting with all features in the training dataset and successfully removing features until the desired number remains. This is achieved by fitting the given machine learning algorithm used in the core of the model, ranking features by importance, discarding the least important features, and re-fitting the model. 
 
 ---
 
