@@ -282,9 +282,9 @@ The following table summarizes the accepted *content-type* for performing a *bat
 | Object2Vec             | `application/json`                                                         |
 | PCA                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
 | RCF                    | `text/csv`, `application/json`, `application/jsonlines`, `application/x-recordio-protobuf` |
-|XGboost |`text/csv`, `text/libsvm`,  |
+| XGboost |`text/csv`, `text/libsvm`,  |
 | Object Detection Algorithm | `application/x-image`, `application/x-recordio`, `image/jpeg`, `image/png` |
-|Semantic Segmentation | `application/x-image`, `image/jpeg`, `image/png` |
+| Semantic Segmentation | `application/x-image`, `image/jpeg`, `image/png` |
 
 > **IMP:** Many Amazon SageMaker algorithms support training with data in CSV format. To use data in CSV format for training, in the input data channel specification, specify `text/csv` as the ContentType. **Amazon SageMaker requires that a CSV file does not have a header record and that the target variable is in the first column**. To run unsupervised learning algorithms that don't have a target, specify the number of label columns in the content type. For example, in this case `content_type=text/csv;label_size=0`. 
 
@@ -312,6 +312,7 @@ When you build complex machine learning systems like deep learning neural networ
 *  **Hyperband**: Hyperband is a multi-fidelity based tuning strategy that dynamically reallocates resources. Hyperband uses both intermediate and final results of training jobs to re-allocate epochs to well-utilized hyperparameter configurations and automatically stops those that underperform. It also seamlessly scales to using many parallel training jobs. These features can significantly speed up hyperparameter tuning over random search and Bayesian optimization strategies.
 
 > **NOTE:** Hyperband should only be used to tune iterative algorithms that publish results at different resource levels.
+>> When you use automatic model tuning, the linear learner **internal tuning mechanism is turned off automatically**. This sets the number of *parallel models*, *num_models*, to 1. The algorithm ignores any value that you set for *num_models*.
 
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
@@ -1550,6 +1551,9 @@ $$Accuracy = \frac{TP+TN}{Total} $$
 $$F_{score} = \frac{2*Recall*Precision}{Recall+Precision} $$
 
 ---
+
+> F1-Score might be a better measure to use if we need to seek a balance between Precision and Recall AND there is an uneven class distribution (large number of Actual Negatives).
+>> Applying the same understanding, we know that Recall shall be the model metric we use to select our best model when there is a high cost associated with False Negative.
 
 ### [Receiver Operating Characteristic Curve](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
 An ROC curve is a graph showing the performance of a classification model **at all classification thresholds**. This curve plots two parameters: **Recall(TPR) and FPR**
