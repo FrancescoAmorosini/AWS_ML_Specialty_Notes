@@ -72,6 +72,7 @@
     - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
   - [Amazon Redshift](#amazon-redshift)
   - [Amazon Kinesis](#amazon-kinesis)
+    - [PutRecord API](#putrecord-api)
     - [Shards](#shards)
   - [Amazon Athena](#amazon-athena)
     - [Federated query](#federated-query)
@@ -503,6 +504,7 @@ If you delete an object directly from Amazon S3 that EMRFS consistent view track
 The *push_down_predicate* option is applied after listing all the partitions from the catalog and before listing files from Amazon S3 for those partitions. If you have a lot of partitions for a table, catalog partition listing can still incur additional time overhead. To address this overhead, you can use server-side partition pruning with the *catalogPartitionPredicate* option that uses partition indexes in the AWS Glue Data Catalog. This makes partition filtering much faster when you have millions of partitions in one table. You can use both *push_down_predicate* and *catalogPartitionPredicate* in *additional_options* together.
 
 > The *push_down_predicate* and *catalogPartitionPredicate* use different syntaxes. The former one uses Spark SQL standard syntax and the later one uses JSQL parser.
+>>**IMP:** AWS Glue job cannot write output in recordIO-protobuf format!
 
 ### SelectField
 You can create a subset of data property keys from the dataset using the SelectFields transform. You indicate which data property keys you want to keep and the rest are removed from the dataset.
@@ -582,6 +584,17 @@ Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis
 **Amazon Kinesis Data Firehose** is the easiest way to reliably load streaming data into data lakes, data stores, and analytics services. It can capture, transform, and deliver streaming data to Amazon S3, Amazon Redshift, Amazon Elasticsearch Service, generic HTTP endpoints, and service providers like Datadog, New Relic, MongoDB, and Splunk. It is a fully managed service that automatically scales to match the throughput of your data and requires no ongoing administration. It can also batch, compress, transform, and encrypt your data streams before loading, minimizing the amount of storage used and increasing security.
 
 Kinesis Firehose should be used instead of Kinesis Data Streams when there are multiple data sources for the shipment records.
+
+### PutRecord API
+For **Amazon Kinesis Data Firehose**, PutRecord  writes a single data record into an Amazon Kinesis Data Firehose delivery stream. To write multiple data records into a delivery stream, use PutRecordBatch. By default, each delivery stream can take in up to 2,000 transactions per second, 5,000 records per second, or 5 MB per second. If you use PutRecord and PutRecordBatch, the limits are an aggregate across these two operations for each delivery stream.
+
+>You must specify the name of the delivery stream and the data record when using PutRecord for Kinesis Data Firehose.
+
+For **Amazon Kinesis Data Streams**, PutRecord writes a single data record into an Amazon Kinesis data stream. Call PutRecord to send data into the stream for real-time ingestion and subsequent processing, one record at a time. Each shard can support writes up to 1,000 records per second, up to a maximum data write total of 1 MiB per second.
+
+>You must specify the name of the stream that captures, stores, and transports the data; a partition key; and the data blob itself when using PutRecord for Kinesis Data Streams.
+
+The partition key is used by Kinesis Data Streams to distribute data across shards. Kinesis Data Streams segregates the data records that belong to a stream into multiple shards, using the partition key associated with each data record to determine the shard to which a given data record belongs.
 
 ### Shards
 A Kinesis data stream is a set of **shards**. Each shard has a sequence of **data records**. Each data record has a sequence number that is assigned by Kinesis Data Streams. A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
