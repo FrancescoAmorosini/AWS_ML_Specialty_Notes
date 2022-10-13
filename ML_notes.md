@@ -109,6 +109,7 @@
     - [Word2Vec](#word2vec)
       - [CBOW](#cbow)
       - [Skip-Gram](#skip-gram)
+    - [Levensthein Distance](#levensthein-distance)
   - [Class Imbalance](#class-imbalance)
     - [Sampling Techniques](#sampling-techniques)
   - [Correlation Analysis](#correlation-analysis)
@@ -950,6 +951,14 @@ The word *"sat"* will be given and we’ll try to predict words *"cat"*, *"mat"*
 
 > In the CBOW model, the distributed representations of context (or surrounding words) are combined to predict the word in the middle. While in the Skip-gram model, the distributed representation of the input word is used to predict the context.
 >> **Skip-gram** works well with a small amount of the training data, represents well even rare words or phrases. **CBOW** is several times faster to train than the skip-gram, slightly better accuracy for the frequent words.
+
+---
+### [Levensthein Distance](https://medium.com/@ethannam/understanding-the-levenshtein-distance-equation-for-beginners-c4285a5604f0)
+The Levenshtein distance is a string metric for measuring the difference between two sequences. Informally, the Levenshtein distance between two words is the minimum number of single-character edits (i.e. insertions, deletions or substitutions) required to change one word into the other. 
+
+For example, the Levenshtein distance between “kitten” and “sitting” is 3 since, at a minimum, 3 edits are required to change one into the other. An **edit** is defined by either an insertion of a character, a deletion of a character, or a replacement of a character.
+
+>Levenshtein distance cannot be used to build a context aware model.
 
 ---
 
