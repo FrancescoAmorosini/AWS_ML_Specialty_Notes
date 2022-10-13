@@ -45,6 +45,7 @@
     - [SageMaker Clarify](#sagemaker-clarify)
     - [SageMaker Hosting Services](#sagemaker-hosting-services)
     - [SageMaker Available Algorithms](#sagemaker-available-algorithms)
+    - [Incremental Learning](#incremental-learning)
     - [Amazon Comprehend on Amazon SageMaker Notebooks](#amazon-comprehend-on-amazon-sagemaker-notebooks)
     - [Monitoring](#monitoring)
   - [Amazon Forecast](#amazon-forecast)
@@ -59,8 +60,6 @@
   - [Amazon EMR](#amazon-emr)
     - [EMRFS](#emrfs)
   - [AWS Lake Formation](#aws-lake-formation)
-  - [Amazon Kinesis](#amazon-kinesis)
-    - [Shards](#shards)
   - [AWS Glue](#aws-glue)
     - [Pushdown Predicates](#pushdown-predicates)
     - [Partition Predicates (Server-Side Filtering)](#partition-predicates-server-side-filtering)
@@ -72,7 +71,8 @@
     - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
     - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
   - [Amazon Redshift](#amazon-redshift)
-  - [Amazon Kinesis](#amazon-kinesis-1)
+  - [Amazon Kinesis](#amazon-kinesis)
+    - [Shards](#shards)
   - [Amazon Athena](#amazon-athena)
     - [Federated query](#federated-query)
     - [Partitioning data in Athena](#partitioning-data-in-athena)
@@ -105,6 +105,7 @@
       - [Scoring Words: Count & Frequence](#scoring-words-count--frequence)
       - [Scoring Words: Hashing](#scoring-words-hashing)
       - [Scoring Words: TF-IDF](#scoring-words-tf-idf)
+      - [Latent Dirichlet Allocation](#latent-dirichlet-allocation)
       - [Limitations of BoW](#limitations-of-bow)
     - [Word2Vec](#word2vec)
       - [CBOW](#cbow)
@@ -251,6 +252,8 @@ To prevent SageMaker from providing internet access to your Studio notebooks, yo
 <img style="background-color:#ffff; text-align:center;" width="900" src="https://docs.aws.amazon.com/sagemaker/latest/dg/images/studio/studio-vpc-private.png" />
 
 [The notebook instance has a variety of networking configurations available to it.](https://aws.amazon.com/it/blogs/machine-learning/understanding-amazon-sagemaker-notebook-instance-networking-configurations-and-advanced-routing-options/)
+
+> **IMP:** Only files and data saved within the /home/ec2-user/SageMaker folder persist between notebook instance sessions. Files and data that are saved outside this directory are overwritten when the notebook instance stops and restarts.
 
 ### [Gateway Endpoints for Amazon S3](https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html#vpc-endpoints-s3-bucket-policies)
 You can access Amazon S3 from your VPC using gateway VPC endpoints. After you create the gateway endpoint, you can add it as a target in your route table for traffic destined from your VPC to Amazon S3.
@@ -400,6 +403,11 @@ After you train your machine learning model, you can deploy it using Amazon Sage
 
 > Deploying a model using SageMaker hosting services is a three-step process with the following steps: Create a model in SageMaker, Create an endpoint configuration for an HTTPS endpoint, Create an HTTPS endpoint.
 
+### [Incremental Learning](https://docs.aws.amazon.com/sagemaker/latest/dg/incremental-training.html)
+Over time, you might find that a model generates inference that are not as good as they were in the past. With incremental training, you can use the artifacts from an existing model and use an expanded dataset to train a new model.
+
+>**IMP:** The only SageMaker built-in algorithms that support incremental training are: **Object Detection Algorithm, Image Classification Algorithm, and Semantic Segmentation Algorithm**.
+
 ### [Amazon Comprehend on Amazon SageMaker Notebooks](https://aws.amazon.com/it/blogs/machine-learning/analyze-content-with-amazon-comprehend-and-amazon-sagemaker-notebooks/)
 Amazon Comprehend takes your unstructured data such as social media posts, emails, webpages, documents, and transcriptions as input. Then it analyzes the input using the power of NLP algorithms to extract key phrases, entities, and sentiments automatically.
 
@@ -486,20 +494,6 @@ If you delete an object directly from Amazon S3 that EMRFS consistent view track
 
 ---
 
-## Amazon Kinesis
-You cannot stream data directly to Kinesis Data Analytics, you have to use Kinesis Data Stream of Kinesis Firehose first. Kinesis Firehose can produce parquet formatted data (from JSON!), but cannot apply transformations like Kinesis Data Analytics.
-
-Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations.
-
-### Shards
-A Kinesis data stream is a set of **shards**. Each shard has a sequence of **data records**. Each data record has a sequence number that is assigned by Kinesis Data Streams. A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
-
-A stream is composed of one or more shards, each of which provides a fixed unit of capacity. Each shard can support up to **5 transactions per second for reads**, up to a maximum total data read rate of **2 MB** per second and up to **1,000 records per second for writes**, up to a maximum total data write rate of **1 MB** per second (including partition keys).
-
-If your data rate increases, you can increase or decrease the number of shards allocated to your stream.
-
----
-
 ## AWS Glue
 
 ### [Pushdown Predicates](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html#aws-glue-programming-etl-partitions-pushdowns) 
@@ -564,8 +558,6 @@ To run inferencing on your dataset, you can connect to any of the QuickSight sup
 
 > [QuickSight’s integration](https://github.com/aws-samples/quicksight-sagemaker-integration-blog) with Amazon Sagemaker is only available on the Enterprise Edition of Amazon QuickSight.
 
-
-
 ---
 
 ## Amazon Redshift
@@ -583,10 +575,26 @@ Redshift Spectrum can be used in conjunction with any other AWS compute service 
 
 ## Amazon Kinesis
 
-Kinesis Firehose should be used instead of Kinesis Data Streams since there are multiple data sources for the shipment records.
+**Amazon Kinesis Data Analytics** is the easiest way to transform and analyze streaming data in real time with Apache Flink. Apache Flink is an open source framework and engine for processing data streams. Amazon Kinesis Data Analytics reduces the complexity of building, managing, and integrating Apache Flink applications with other AWS services.
 
- [**Use Elasticsearch to read a Firehose delivery stream un another account**](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#cross-account-delivery-es): Create an IAM role under account A using the steps described in Grant Kinesis Data Firehose Access to a Public OpenSearch Service Destination. To allow access from the IAM role that you created in the previous step, create an OpenSearch Service policy under account B. Create a Kinesis Data Firehose delivery stream under account A using the IAM role that you created in such account. When you create the delivery stream, use the AWS CLI or the Kinesis Data Firehose APIs and specify the ClusterEndpoint field instead of DomainARN for OpenSearch Service.
- >To create a delivery stream in one AWS account with an OpenSearch Service destination in a different account, you must use the AWS CLI or the Kinesis Data Firehose APIs.
+Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations.
+
+**Amazon Kinesis Data Firehose** is the easiest way to reliably load streaming data into data lakes, data stores, and analytics services. It can capture, transform, and deliver streaming data to Amazon S3, Amazon Redshift, Amazon Elasticsearch Service, generic HTTP endpoints, and service providers like Datadog, New Relic, MongoDB, and Splunk. It is a fully managed service that automatically scales to match the throughput of your data and requires no ongoing administration. It can also batch, compress, transform, and encrypt your data streams before loading, minimizing the amount of storage used and increasing security.
+
+Kinesis Firehose should be used instead of Kinesis Data Streams when there are multiple data sources for the shipment records.
+
+### Shards
+A Kinesis data stream is a set of **shards**. Each shard has a sequence of **data records**. Each data record has a sequence number that is assigned by Kinesis Data Streams. A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
+
+A stream is composed of one or more shards, each of which provides a fixed unit of capacity. Each shard can support up to **5 transactions per second for reads**, up to a maximum total data read rate of **2 MB** per second and up to **1,000 records per second for writes**, up to a maximum total data write rate of **1 MB** per second (including partition keys).
+
+If your data rate increases, you can increase or decrease the number of shards allocated to your stream.
+
+[**Use Elasticsearch to read a Firehose delivery stream un another account**](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#cross-account-delivery-es): Create an IAM role under account A using the steps described in Grant Kinesis Data Firehose Access to a Public OpenSearch Service Destination. To allow access from the IAM role that you created in the previous step, create an OpenSearch Service policy under account B. Create a Kinesis Data Firehose delivery stream under account A using the IAM role that you created in such account. When you create the delivery stream, use the AWS CLI or the Kinesis Data Firehose APIs and specify the ClusterEndpoint field instead of DomainARN for OpenSearch Service.
+>To create a delivery stream in one AWS account with an OpenSearch Service destination in a different account, you must use the AWS CLI or the Kinesis Data Firehose APIs.
+
+> **IMP:** Kinesis Data Analytics cannot directly ingest source data.
+>> You cannot stream data directly to Kinesis Data Analytics, you have to use Kinesis Data Stream of Kinesis Firehose first. Kinesis Firehose can produce parquet formatted data (from JSON!), but cannot apply transformations like Kinesis Data Analytics.
 
 ---
 
@@ -918,6 +926,38 @@ $$\text{tf-idf}(\text{“fox”}, d1, D) = tf(\text{“fox”}, d1) * idf(\text{
 $$\text{tf-idf}(\text{“fox”}, d2, D) = tf(\text{“fox”}, d2) * idf(\text{“fox”}, D) = (2/12) * 0 = 0 $$
 
 ---
+
+#### [Latent Dirichlet Allocation](https://towardsdatascience.com/latent-dirichlet-allocation-lda-9d1cd064ffa2)
+LDA is a method for unsupervised classification of documents, similar to clustering on numeric data, which finds some natural groups of items (topics). **Topic modeling** provides methods for automatically organizing, understanding, searching, and summarizing large electronic archives.
+
+The aim of LDA is to find topics a document belongs to, based on the words in it.
+
+What we want to figure out are the words in different topics, as shown in the table below. Each row in the table represents a different topic and each column a different word in the corpus. Each cell contains the probability that the word belongs to the topic.
+
+<img style="background-color:#ffff; text-align:center;" width="900" src="https://miro.medium.com/max/750/1*NjeMT281GMduRYvPIS8IjQ.png" />
+
+We can sort the words with respect to their probability score.
+The top $x$ words are chosen from each topic to represent the topic. If $x = 10$ , we’ll sort all the words in topic1 based on their score and take the top 10 words to represent the topic. Alternatively, we can set a threshold on the score. All the words in a topic having a score above the threshold can be stored as its representative, in order of their scores.
+
+With this table it's rather easy to decide if a sentence belongs to a topic, but we still have to find a way to calculate the probabilities.
+
+**Algorithm to find the probabilities**:
+1. Assign to each word an integer $k$
+2. For each document $d$:
+   1. Compute $p(\text{topic}_t | \text{document}_d)$: the proportion of words in document $d$ that are assigned to topic $t$.
+   2. Compute $p(\text{word}_w| \text{topic}_t)$: the proportion of assignments to topic $t$ over all documents that come from this word $w$. LDA represents documents as a mixture of topics. Similarly, a topic is a mixture of words. If a word has high probability of being in a topic, all the documents having w will be more strongly associated with t as well.
+   3. Update the probability for the word $w$ belonging to topic $t$, as:
+   $$p(\text{word}_w \text{with topic t}) = p(\text{topic}_t | \text{document}_d) * p(\text{word}_w| \text{topic}_t) $$
+
+**Assumptions**:
+* Each document is just a collection of words or a **“bag of words”**. Thus, the order of the words and the grammatical role of the words are not considered in the model.
+* You are **eliminating stopwords** from your corpus before applying the algorithm.
+* We know beforehand how many topics we want.
+* All topic assignments except for the current word in question are correct, and then updating the assignment of the current word using our model of how documents are generated.
+
+---
+
+
 #### Limitations of BoW
 The bag-of-words model is very simple to understand and implement and offers a lot of flexibility for customization on your specific text data.
 
