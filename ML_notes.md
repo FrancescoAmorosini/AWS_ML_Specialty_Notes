@@ -67,6 +67,7 @@
     - [Relationalize](#relationalize)
     - [Data Brew](#data-brew)
     - [Pyton Shell Jobs](#pyton-shell-jobs)
+    - [Glue ML Transforms](#glue-ml-transforms)
   - [Amazon QuickSight](#amazon-quicksight)
     - [Amazon QuickSight vs Kibana](#amazon-quicksight-vs-kibana)
     - [Quicksight-SageMaker integration](#quicksight-sagemaker-integration)
@@ -96,6 +97,7 @@
     - [Helmert Encoding](#helmert-encoding)
     - [Binary Encoding](#binary-encoding)
     - [Frequency Encoding](#frequency-encoding)
+    - [Sine/Cosine Transform](#sinecosine-transform)
     - [Target Encoding](#target-encoding)
     - [Weight of Evidence Encoding](#weight-of-evidence-encoding)
     - [Hashing](#hashing)
@@ -177,6 +179,7 @@
   - [Confusion Matrix](#confusion-matrix)
     - [Statistics on Confusion Matrix](#statistics-on-confusion-matrix)
     - [Receiver Operating Characteristic Curve](#receiver-operating-characteristic-curve)
+    - [Precision Recall Curve](#precision-recall-curve)
   - [Satisficing Metrics](#satisficing-metrics)
   - [Residual Analysis](#residual-analysis)
 
@@ -218,6 +221,7 @@ Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-en
 Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL).
 
 >You can use Amazon SageMaker Data Wrangler to import data from the following data sources: Amazon Simple Storage Service (Amazon S3), Amazon Athena, Amazon Redshift, and Snowflake.
+>>**IMP:** The two metrics used by [Amazon SageMaker Data Wrangler target leakage](https://docs.aws.amazon.com/sagemaker/latest/dg/data-wrangler-analyses.html#data-wrangler-analysis-target-leakage) are **AUC-ROC and R2**. The Quick Model is a Spark Random Forest and uses **F1-Score and MSE**.
 
 ### [SageMaker Feature Store](https://docs.aws.amazon.com/sagemaker/latest/dg/feature-store.html)
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
@@ -239,6 +243,8 @@ A SageMaker image is a file that identifies the kernels, language packages, and 
 * Tensorflow
 
 If you need different functionality, you can bring your own custom images to Studio. In order to do this, you need to build your Dockerfile locally (satisfy the [requirements](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-byoi-specs.html) to be used in Amazon SageMaker Studio), push it to ECR, and then use it as source for a SageMaker image. After you have created your custom SageMaker image, you must attach it to your domain to use it with Studio.
+
+>**IMP:** In the request for creating a model, you name the model and describe a **primary container**. For the primary container, you specify the Docker image that contains inference code, artifacts (from prior training), and a custom environment map that the inference code uses when you deploy the model for predictions.
 
 ### [PrivateLink](https://aws.amazon.com/it/blogs/machine-learning/secure-prediction-calls-in-amazon-sagemaker-with-aws-privatelink/)
 Amazon SageMaker now supports Amazon Virtual Private Cloud (VPC) Endpoints via AWS PrivateLink so you can initiate prediction calls to your machine learning models hosted on Amazon SageMaker inside your VPC, without going over the internet. With AWS PrivateLink support, the SageMaker Runtime API can be called through an interface endpoint within the VPC instead of connecting over the internet. Since the communication between the client application and the SageMaker Runtime API is inside the VPC, there is no need for an Internet Gateway, a NAT device, a VPN connection, or AWS Direct Connect.
@@ -307,7 +313,7 @@ A typical project with a SageMaker-provided template might include the following
 ### [Inference Pipeline](https://docs.aws.amazon.com/sagemaker/latest/dg/inference-pipelines.html)
 An inference pipeline is a Amazon SageMaker model that is composed of a linear sequence of two to fifteen containers that process requests for inferences on data. You use an inference pipeline to define and deploy any combination of pretrained SageMaker built-in algorithms and your own custom algorithms packaged in Docker containers. You can use an inference pipeline to combine preprocessing, predictions, and post-processing data science tasks. Inference pipelines are fully managed.
 
-The entire assembled inference pipeline can be considered as a SageMaker model that you can use to make either real-time predictions or to process batch transforms directly without any external preprocessing.
+The entire assembled inference pipeline can be considered as a SageMaker model that you can use to make **either real-time predictions or to process batch transforms** directly without any external preprocessing.
 
 ### [SageMaker Automatic Model Tuning](https://docs.aws.amazon.com/sagemaker/latest/dg/automatic-model-tuning.html)
 When you build complex machine learning systems like deep learning neural networks, exploring all of the possible combinations is impractical. Hyperparameter tuning can accelerate your productivity by trying many variations of a model. It looks for the best model automatically by focusing on the most promising combinations of hyperparameter values within the ranges that you specify. It comes in three flavours:
@@ -321,6 +327,8 @@ When you build complex machine learning systems like deep learning neural networ
 
 ### [SageMaker Experiments](https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/)
 The goal of SageMaker Experiments is to make it as simple as possible to create experiments, populate them with trials (A trial is a collection of training steps involved in a single training job), and run analytics across trials and experiments. Running your training jobs on SageMaker or SageMaker Autopilot, all you have to do is pass an extra parameter to the Estimator, defining the name of the experiment that this trial should be attached to. All inputs and outputs will be logged automatically.
+
+>**IMP:** Autopilot only supports datasets in CSV or Parquet format.
 
 ### [SageMaker Autopilot](https://github.com/aws/amazon-sagemaker-examples/blob/main/autopilot/sagemaker_autopilot_direct_marketing.ipynb)
 Amazon SageMaker Autopilot is an automated machine learning (commonly referred to as AutoML) solution for tabular datasets. It explores your data, selects the algorithms relevant to your problem type, and prepares the data to facilitate model training and tuning. Autopilot applies a cross-validation resampling procedure automatically to all candidate algorithms when appropriate to test their ability to predict data they have not been trained on. It also produces metrics to assess the predictive quality of its machine learning model candidates. It ranks all of the optimized models tested by their performance. It finds the best performing model that you can deploy at a fraction of the time normally required.
@@ -496,6 +504,11 @@ If you delete an object directly from Amazon S3 that EMRFS consistent view track
 ---
 
 ## AWS Glue
+There are three types of jobs in AWS Glue: **Spark, Streaming ETL, and Python shell**.
+
+* A Spark job is run in an Apache Spark environment managed by AWS Glue. It processes data in *batches*.
+* A streaming ETL job is similar to a Spark job, except that it performs *ETL on data streams*. It uses the *Apache Spark Structured Streaming framework*. Some Spark job features are not available to streaming ETL jobs.
+* A Python shell job runs Python scripts as a shell and supports a Python version that depends on the AWS Glue version you are using. You can use these jobs to *schedule and run tasks that don't require an Apache Spark environment*.
 
 ### [Pushdown Predicates](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-partitions.html#aws-glue-programming-etl-partitions-pushdowns) 
 (Pre-Filtering)**: In many cases, you can use a pushdown predicate to filter on partitions without having to list and read all the files in your dataset. Instead of reading the entire dataset and then filtering in a DynamicFrame, you can apply the filter directly on the partition metadata in the Data Catalog. Then you only list and read what you actually need into a DynamicFrame. The predicate expression can be any Boolean expression supported by Spark SQL. Anything you could put in a WHERE clause in a Spark SQL query will work.
@@ -517,10 +530,17 @@ Glue's **Relationalize** transformation can be used to convert data in a Dynamic
 ### Data Brew 
 Similar to Sagemaker Data Wrangler, you can run profile job (fully managed) that will give you basic statistics on your data (correlation, statistics, etc). 
 
-> **Glue cannot write the output in RecordIO-Protobuf format!**
+
 
 ### [Pyton Shell Jobs](https://aws.amazon.com/about-aws/whats-new/2019/01/introducing-python-shell-jobs-in-aws-glue/)
 You can now use Python shell jobs, for example, to submit SQL queries to services such as Amazon Redshift, Amazon Athena, or Amazon EMR, or run machine-learning and scientific analyses. Python shell jobs in AWS Glue support scripts that are compatible with Python 2.7 and come pre-loaded with libraries such as the Boto3, NumPy, SciPy, pandas, and others. You can run Python shell jobs using 1 DPU (Data Processing Unit) or 0.0625 DPU (which is 1/16 DPU). A single DPU provides processing capacity that consists of 4 vCPUs of compute and 16 GB of memory.
+
+### [Glue ML Transforms](https://docs.aws.amazon.com/glue/latest/dg/machine-learning.html)
+You can create machine learning transforms to cleanse your data using AWS Glue ML Transforms. You can call these transforms from your ETL script. Your data passes from transform to transform in a data structure called a **DynamicFrame**, which is an extension to an Apache Spark SQL DataFrame. The DynamicFrame contains your data, and you reference its schema to process your data.
+
+The following types of machine learning transforms are available:
+* **Find Matches:**Finds duplicate records in the source data. You teach this machine learning transform by labeling example datasets to indicate which rows match. The machine learning transform learns which rows should be matches the more you teach it with example labeled data.
+* **Find Incremental Matches:** The Find matches transform can also be configured to find matches across the existing and incremental frames and return as output a column containing a unique ID per match group.
 
 ---
 
@@ -579,11 +599,19 @@ Redshift Spectrum can be used in conjunction with any other AWS compute service 
 
 **Amazon Kinesis Data Analytics** is the easiest way to transform and analyze streaming data in real time with Apache Flink. Apache Flink is an open source framework and engine for processing data streams. Amazon Kinesis Data Analytics reduces the complexity of building, managing, and integrating Apache Flink applications with other AWS services.
 
-Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations.
+Kinesis Data Analytics cannot write directly to a MongoDB HTTP endpoint! Kinesis Data Analytics supports Amazon Kinesis Data Firehose (Amazon S3, Amazon Redshift, and Amazon Elasticsearch Service), AWS Lambda, and Amazon Kinesis Data Streams as destinations. Kinesis Data Analytics currently supports JSON or CSV data formats.
+
+The four most common use cases are **streaming extract-transform-load (ETL), continuous metric generation, responsive real-time analytics, and interactive querying of data streams.**
 
 **Amazon Kinesis Data Firehose** is the easiest way to reliably load streaming data into data lakes, data stores, and analytics services. It can capture, transform, and deliver streaming data to Amazon S3, Amazon Redshift, Amazon Elasticsearch Service, generic HTTP endpoints, and service providers like Datadog, New Relic, MongoDB, and Splunk. It is a fully managed service that automatically scales to match the throughput of your data and requires no ongoing administration. It can also batch, compress, transform, and encrypt your data streams before loading, minimizing the amount of storage used and increasing security.
 
 Kinesis Firehose should be used instead of Kinesis Data Streams when there are multiple data sources for the shipment records.
+
+Kinesis Firehose buffers incoming data before writing to S3. You can choose a buffer size (1-128MB) or buffer interval (60-900 seconds), and whichever triggers first will trigger the write.
+
+When you enable **Kinesis Data Firehose data transformation**, Kinesis Data Firehose buffers incoming data. The buffering hint ranges between 0.2 MB and up to 3MB. The default buffering hint is 1MB for all destinations, except Splunk. For Splunk, the default buffering hint is 256 KB.
+
+Kinesis Data Firehose supports a Lambda invocation time of up to 5 minutes.
 
 ### PutRecord API
 For **Amazon Kinesis Data Firehose**, PutRecord  writes a single data record into an Amazon Kinesis Data Firehose delivery stream. To write multiple data records into a delivery stream, use PutRecordBatch. By default, each delivery stream can take in up to 2,000 transactions per second, 5,000 records per second, or 5 MB per second. If you use PutRecord and PutRecordBatch, the limits are an aggregate across these two operations for each delivery stream.
@@ -593,8 +621,12 @@ For **Amazon Kinesis Data Firehose**, PutRecord  writes a single data record int
 For **Amazon Kinesis Data Streams**, PutRecord writes a single data record into an Amazon Kinesis data stream. Call PutRecord to send data into the stream for real-time ingestion and subsequent processing, one record at a time. Each shard can support writes up to 1,000 records per second, up to a maximum data write total of 1 MiB per second.
 
 >You must specify the name of the stream that captures, stores, and transports the data; a partition key; and the data blob itself when using PutRecord for Kinesis Data Streams.
+>> The request can also include the SequenceNumberForOrdering and an ExplicitHashKey.
 
 The partition key is used by Kinesis Data Streams to distribute data across shards. Kinesis Data Streams segregates the data records that belong to a stream into multiple shards, using the partition key associated with each data record to determine the shard to which a given data record belongs.
+
+>PutRequests writes multiple data records into a Kinesis data stream in a single call. Each PutRecords request can support up to 500 records. Each record in the request can be as large as 1 MiB, up to a limit of 5 MiB for the entire request, including partition keys.
+>> You must specify the name of the stream that captures, stores, and transports the data; and an array of request Records, with each record in the array requiring a partition key and data blob. Each record in the Records array may include an optional parameter, ExplicitHashKey, which overrides the partition key to shard mapping.
 
 ### Shards
 A Kinesis data stream is a set of **shards**. Each shard has a sequence of **data records**. Each data record has a sequence number that is assigned by Kinesis Data Streams. A data record is the unit of data stored in a Kinesis data stream. Data records are composed of a sequence number, a partition key, and a data blob, which is an immutable sequence of bytes. Kinesis Data Streams does not inspect, interpret, or change the data in the blob in any way. A data blob can be up to 1 MB.
@@ -602,6 +634,8 @@ A Kinesis data stream is a set of **shards**. Each shard has a sequence of **dat
 A stream is composed of one or more shards, each of which provides a fixed unit of capacity. Each shard can support up to **5 transactions per second for reads**, up to a maximum total data read rate of **2 MB** per second and up to **1,000 records per second for writes**, up to a maximum total data write rate of **1 MB** per second (including partition keys).
 
 If your data rate increases, you can increase or decrease the number of shards allocated to your stream.
+
+$$ \text{shards} = \text{max}(\frac{\text{IncomingWriteBandwidth}_{KB}}{1000}, \frac{\text{OutgoingReadBandwidth}_{KB}}{2000}) $$
 
 [**Use Elasticsearch to read a Firehose delivery stream un another account**](https://docs.aws.amazon.com/firehose/latest/dev/controlling-access.html#cross-account-delivery-es): Create an IAM role under account A using the steps described in Grant Kinesis Data Firehose Access to a Public OpenSearch Service Destination. To allow access from the IAM role that you created in the previous step, create an OpenSearch Service policy under account B. Create a Kinesis Data Firehose delivery stream under account A using the IAM role that you created in such account. When you create the delivery stream, use the AWS CLI or the Kinesis Data Firehose APIs and specify the ClusterEndpoint field instead of DomainARN for OpenSearch Service.
 >To create a delivery stream in one AWS account with an OpenSearch Service destination in a different account, you must use the AWS CLI or the Kinesis Data Firehose APIs.
@@ -675,6 +709,8 @@ Amazon Kendra is a highly accurate and intelligent search service that enables y
 
 You can use Amazon Kendra to create an updatable index of documents of a variety of types, including *plain text, HTML files, Microsoft Word documents, Microsoft PowerPoint presentations, and PDF files*.
 
+>**IMP:** the text extracted from each document cannot exceed 5MB
+
 ---
 
 ## Amazon CodeGuru Reviewer
@@ -731,6 +767,8 @@ The Log Transform **decreases the effect of the outliers**, due to the normaliza
 ## Imputation Methods for Missing Values
 
 <img style="background-color:#ffff; text-align:center;" width="900" src="https://editor.analyticsvidhya.com/uploads/30381Imputation%20Techniques%20types.JPG" />
+
+>**IMP:** There are three kind of imputers in [*sklearn*](https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html#sklearn.impute.KNNImputer), SimpleImputer, IterativeImputer, KKNImputer.
 
 1. **Complete Case Analisys**: This is a quite straightforward method of handling the Missing Data, which directly removes the rows that have missing data i.e we consider only those rows where we have complete data i.e data is not missing. This method is also popularly known as "Listwise deletion".
     * **Assumptions**:
@@ -831,7 +869,14 @@ Binary encoding converts a category into binary digits. Each binary digit create
 ### Frequency Encoding
 It is a way to utilize the frequency of the categories as labels. In the cases where the frequency is related somewhat to the target variable, it helps the model understand and assign the weight in direct and inverse proportion, depending on the nature of the data. If two different categories appear the same amount of times in the dataset, that is, they appear in the same number of observations, they will be replaced by the same number,hence, *may lose valuable information*.
 
-### [Target Encoding](https://towardsdatascience.com/dealing-with-categorical-variables-by-using-target-encoder-a0f1733a4c69)
+### [Sine/Cosine Transform](https://towardsdatascience.com/cyclical-features-encoding-its-about-time-ce23581845ca)
+When you are dealing with time-series data, it is also common that your dataframe’s index has a datetime format (YYYY-MM-DD HH:MM:SS) and that you will not extract much information from it, except the ascending order of data points. However, there might be some hidden patterns in your dataset which will not be revealed by the regular features. I am talking here about cyclical patterns such as hours of the day, days of the week, months, seasons, etc.
+
+A good method to do that is to remap your datetime index onto a cyclic function, such as Sine or Cosine. This will normalize your feature from 0 to 2π. However, since Cosine is an even function, there might be values of your features that map to multiple (two) values on the Cosine function. The solution to this problem is adding also the Sine feature, so that each timestamp will correspond to an unique couple of Sine/Cosine values.
+
+>**IMP:** Decision trees based algorithms (Random Forest, Gradient Boosted Trees, XGBoost) build their split rules according to one feature at a time. This means that they will fail to process these two features simultaneously whereas the cos/sin values are expected to be considered as one single coordinates system.
+
+### [Target Encoding](https://www.kaggle.com/code/ryanholbrook/target-encoding/tutorial)
 Target encoding is similar to label encoding, except here labels are correlated directly with the target. For example, in mean target encoding for each category in the feature label is decided with the mean value of the target variable on training data. This encoding method brings out the relation between similar categories, *but the connections are bounded within the categories and target itself*. The advantages of the mean target encoding are that *it does not affect the volume of the data* and helps in faster learning. 
 
 The problem of target encoding has a name: **over-fitting**. Indeed, relying on an average value isn't always a good idea when the number of values used in the average is low. To overcome such problem, **additive smoothing** is often employed, which means that the (weighted) global mean is taken into consideration when calculating the encoding.
@@ -1158,6 +1203,12 @@ RFE is a **wrapper-type** feature selection algorithm. This means that a differe
 ## Spark
 
 When a task is **parallelized** in Spark, it means that concurrent tasks may be running on the driver node or worker nodes. How the task is split across these different nodes in the cluster depends on the types of data structures and libraries that you're using. When a task is **distributed** in Spark, it means that the data being operated on is split across different nodes in the cluster, and that the tasks are being performed concurrently. Ideally, you want to author tasks that are both parallelized and distributed.
+
+AWS Glue serializes Spark ML jobs into MLeap containers. These containers can be added to SageMaker Inference Pipelines.
+
+Apache Spark MLlib is a machine learning library that lets you build machine learning pipeline components to transform your data using standard transformers (tokenizers, OHE, normalizers, etc.)
+
+Spark ML Serving Container allows to deploy Apache Spark ML pipeline in SageMaker.
 
 ---
 
@@ -1639,6 +1690,16 @@ AUC isn't a useful metric for anomaly detection.
 
 > In general, raising the classification threshold reduces false positives, **thus raising precision**.
 >> Raising our classification threshold will cause the number of true positives to decrease or stay the same and will cause the number of false negatives to increase or stay the same. **Thus, recall will either stay constant or decrease**.
+
+### [Precision Recall Curve](https://cosmiccoding.com.au/tutorials/pr_vs_roc_curves#:~:text=In%20general%2C%20the%20ROC%20curve,specific%20imbalance%20we%20provided%20it.)
+It is the curve between precision and recall for various threshold values. In the figure below we have 6 predictors showing their respective precision-recall curve for various threshold values. The top right part of the graph is the ideal space where we get high precision and recall.
+
+<img style="background-color:#ffff; text-align:center;" width="600" src="https://miro.medium.com/max/750/1*FPT_ykB5W226a-GW3g8l5A.png" />
+
+**Which one to use PR or ROC?**
+Due to the absence of TN in the P-R equation, they are useful in imbalanced classes. In the case of class imbalance when there is a majority of the negative class. The metric doesn’t take much into consideration the high number of TRUE NEGATIVES of the negative class which is in majority, giving better resistance to the imbalance.
+
+Due to the consideration of TN or the negative class in the ROC equation, it is useful when both the classes are important to us. Like the detection of cats and dog.
 
 ---
 
