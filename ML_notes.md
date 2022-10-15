@@ -66,6 +66,7 @@
     - [SelectField](#selectfield)
     - [Relationalize](#relationalize)
     - [Data Brew](#data-brew)
+    - [Glue Classifiers](#glue-classifiers)
     - [Pyton Shell Jobs](#pyton-shell-jobs)
     - [Glue ML Transforms](#glue-ml-transforms)
   - [Amazon QuickSight](#amazon-quicksight)
@@ -222,6 +223,8 @@ Custom transforms are available in Python (PySpark, Pandas) and SQL (PySpark SQL
 
 >You can use Amazon SageMaker Data Wrangler to import data from the following data sources: Amazon Simple Storage Service (Amazon S3), Amazon Athena, Amazon Redshift, and Snowflake.
 >>**IMP:** The two metrics used by [Amazon SageMaker Data Wrangler target leakage](https://docs.aws.amazon.com/sagemaker/latest/dg/data-wrangler-analyses.html#data-wrangler-analysis-target-leakage) are **AUC-ROC and R2**. The Quick Model is a Spark Random Forest and uses **F1-Score and MSE**.
+
+**Multicollinearity** is a circumstance where two or more predictor variables are related to each other. The predictor variables are the features in your dataset that you're using to predict a target variable. When you have multicollinearity, the predictor variables are not only predictive of the target variable, but also predictive of each other. You can use the **Variance Inflation Factor (VIF), Principal Component Analysis (PCA), or Lasso feature selection** as measures for the multicollinearity in your data.
 
 ### [SageMaker Feature Store](https://docs.aws.amazon.com/sagemaker/latest/dg/feature-store.html)
 Serves as the single source of truth to store, retrieve, remove, track, share, discover, and control access to features.
@@ -530,7 +533,10 @@ Glue's **Relationalize** transformation can be used to convert data in a Dynamic
 ### Data Brew 
 Similar to Sagemaker Data Wrangler, you can run profile job (fully managed) that will give you basic statistics on your data (correlation, statistics, etc). 
 
+### [Glue Classifiers](https://docs.aws.amazon.com/glue/latest/dg/add-classifier.html)
+A **classifier reads the data in a data store**. If it recognizes the format of the data, it generates a schema. The classifier also returns a certainty number to indicate how certain the format recognition was. AWS Glue provides a set of built-in classifiers, but you can also create custom classifiers. AWS Glue invokes custom classifiers first, in the order that you specify in your crawler definition. You use classifiers when you crawl a data store to define metadata tables in the AWS Glue Data Catalog.
 
+If a classifier returns *certainty=1.0* during processing, it indicates that it's 100 percent certain that it can create the correct schema.
 
 ### [Pyton Shell Jobs](https://aws.amazon.com/about-aws/whats-new/2019/01/introducing-python-shell-jobs-in-aws-glue/)
 You can now use Python shell jobs, for example, to submit SQL queries to services such as Amazon Redshift, Amazon Athena, or Amazon EMR, or run machine-learning and scientific analyses. Python shell jobs in AWS Glue support scripts that are compatible with Python 2.7 and come pre-loaded with libraries such as the Boto3, NumPy, SciPy, pandas, and others. You can run Python shell jobs using 1 DPU (Data Processing Unit) or 0.0625 DPU (which is 1/16 DPU). A single DPU provides processing capacity that consists of 4 vCPUs of compute and 16 GB of memory.
@@ -611,7 +617,7 @@ Kinesis Firehose buffers incoming data before writing to S3. You can choose a bu
 
 When you enable **Kinesis Data Firehose data transformation**, Kinesis Data Firehose buffers incoming data. The buffering hint ranges between 0.2 MB and up to 3MB. The default buffering hint is 1MB for all destinations, except Splunk. For Splunk, the default buffering hint is 256 KB.
 
-Kinesis Data Firehose supports a Lambda invocation time of up to 5 minutes.
+Kinesis Data Firehose supports a **Lambda invocation** time of up to 5 minutes. The transformed data is sent from Lambda to Kinesis Data Firehose. Kinesis Data Firehose then sends it to the destination when the specified destination buffering size or buffering interval is reached, whichever happens first. If your Lambda function invocation fails because of a network timeout or because you've reached the Lambda invocation limit, Kinesis Data Firehose retries the invocation three times by default. If the invocation does not succeed, Kinesis Data Firehose then skips that batch of records. The skipped records are treated as unsuccessfully processed records. You can specify or override the retry options using the CreateDeliveryStream or UpdateDestination API. 
 
 ### PutRecord API
 For **Amazon Kinesis Data Firehose**, PutRecord  writes a single data record into an Amazon Kinesis Data Firehose delivery stream. To write multiple data records into a delivery stream, use PutRecordBatch. By default, each delivery stream can take in up to 2,000 transactions per second, 5,000 records per second, or 5 MB per second. If you use PutRecord and PutRecordBatch, the limits are an aggregate across these two operations for each delivery stream.
