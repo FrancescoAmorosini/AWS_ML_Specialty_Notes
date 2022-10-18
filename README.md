@@ -13,3 +13,15 @@ In general, I suggest you to look for the concerned topic on the Table of Conten
 Enjoy your learning! :)
 
 -Francesco
+
+
+## Update: 17-10-2022
+
+**Yesterday I passed the exam!**
+
+<img style="background-color:#ffff; text-align:center;" width="200" src="https://images.credly.com/size/220x220/images/778bde6c-ad1c-4312-ac33-2fa40d50a147/image.png" />
+
+So here are some hot comments on my experience:
+* On the top of my notes I suggest some study material. I highly suggest to buy the Whizlabs and Udemy test exams, since **some questions in my exam were exactly the same**.
+* There are about 20 questions that are free (if you know the topic), 20 that are challenging, and 20 that are quite hard.
+* Since the passing thereshold is about 75%, if you want to pass the exam you **must** have attended some AI/ML course at some point in your life. And I mean a real academic course with maths, statistics, and laboratories. *Coursera won't save your ass for this one, nor this notes will.*

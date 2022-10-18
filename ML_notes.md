@@ -195,17 +195,19 @@ Amazon SageMaker Elastic Inference (EI) enables users to accelerate throughput a
 ### [Inter-Container Traffic Encryption](https://docs.aws.amazon.com/sagemaker/latest/dg/train-encrypt.html)
 SageMaker automatically encrypts machine learning data and related artifacts in transit and at rest. However, SageMaker does not encrypt all intra-network data in transit such as inter-node communications in distributed processing and training jobs. Enabling inter-container traffic encryption via console or API meets this requirement. Distributed ML frameworks and algorithms usually transmit information that is directly related to the model such as weights, and enabling inter-container traffic encryption can increase training time, especially if you are using distributed deep learning algorithms.
 
+>**IMP:** There are no inter-node communications for batch processing.
+
 ### [Network Isolation](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html#mkt-algo-model-internet-free-isolation)
 If you enable network isolation, the containers can't make any outbound network calls, even to other AWS services such as Amazon S3. Additionally, no AWS credentials are made available to the container runtime environment. In the case of a training job with multiple instances, network inbound and outbound traffic is limited to the peers of each training container. SageMaker still performs download and upload operations against Amazon S3 using your SageMaker execution role in isolation from the training or inference container.
 
->**NOTE:** Amazon SageMaker Reinforcement Learning and Chainer do not support network isolation!
+>**IMP:** Amazon SageMaker Reinforcement Learning and Chainer do not support network isolation!
 
 Network isolation can be used in conjunction with a VPC. In this scenario, the download and upload of customer data and model artifacts are routed through your VPC subnet. However, the training and inference containers themselves continue to be isolated from the network, and do not have access to any resource within your VPC or on the internet.
 
 ### [Identity Based Policies](https://docs.aws.amazon.com/sagemaker/latest/dg/security_iam_service-with-iam.html)
 With IAM identity-based policies, you can specify allowed or denied actions and resources as well as the conditions under which actions are allowed or denied. SageMaker supports specific actions, resources, and condition keys.
 
->**NOTE:** Amazon SageMaker does not support resource-based policies! 
+>**IMP:** Amazon SageMaker does not support resource-based policies! 
 
 When you create a notebook instance, processing job, training job, hosted endpoint, or batch transform job resource in SageMaker, you must choose a role to allow SageMaker to access SageMaker on your behalf. If you have previously created a service role or service-linked role, then SageMaker provides you with a list of roles to choose from.
 
@@ -214,7 +216,7 @@ Amazon SageMaker supports automatic scaling (autoscaling) for your hosted models
 
 To specify the metrics and target values for a scaling policy, you configure a target-tracking scaling policy. You can use either a predefined metric or a custom metric.
 
-> Updating an endpoint with a new configuration will not automatically enable the autoscaling! The correct procedure is: De-register the endpoint as a scalable target, update the endpoint configuration, register the endpoint as scalable again.
+> **IMP:** Updating an endpoint with a new configuration will not automatically enable the autoscaling! The correct procedure is: De-register the endpoint as a scalable target, update the endpoint configuration, register the endpoint as scalable again.
 
 ### [SageMaker Data Wrangler](https://docs.aws.amazon.com/sagemaker/latest/dg/data-wrangler-import.html)
 Data Wrangler is a feature of Amazon SageMaker Studio that provides an end-to-end solution to import, prepare, transform, featurize, and analyze data. It allows you to run your own python code.
@@ -317,6 +319,8 @@ A typical project with a SageMaker-provided template might include the following
 An inference pipeline is a Amazon SageMaker model that is composed of a linear sequence of two to fifteen containers that process requests for inferences on data. You use an inference pipeline to define and deploy any combination of pretrained SageMaker built-in algorithms and your own custom algorithms packaged in Docker containers. You can use an inference pipeline to combine preprocessing, predictions, and post-processing data science tasks. Inference pipelines are fully managed.
 
 The entire assembled inference pipeline can be considered as a SageMaker model that you can use to make **either real-time predictions or to process batch transforms** directly without any external preprocessing.
+
+>**IMP:** A pipeline model is immutable, but you can update an inference pipeline by deploying a new one using the UpdateEndpoint operation.
 
 ### [SageMaker Automatic Model Tuning](https://docs.aws.amazon.com/sagemaker/latest/dg/automatic-model-tuning.html)
 When you build complex machine learning systems like deep learning neural networks, exploring all of the possible combinations is impractical. Hyperparameter tuning can accelerate your productivity by trying many variations of a model. It looks for the best model automatically by focusing on the most promising combinations of hyperparameter values within the ranges that you specify. It comes in three flavours:
@@ -1474,9 +1478,9 @@ That's why we need Automated Drift Threshold, which can be obtained via **Bootst
 
 ## [Weight Initialization](https://www.deeplearning.ai/ai-notes/initialization/index.html)
 
-Neural network models are fit using an optimization algorithm called s*tochastic gradient descent* that incrementally changes the network weights to minimize a loss function. This optimization algorithm requires a starting point in the space of possible weight values from which to begin the optimization process. Weight initialization is a procedure to set the weights of a neural network to small random values that define the starting point for the optimization (learning or training) of the neural network model.
+Neural network models are fit using an optimization algorithm called *stochastic gradient descent* that incrementally changes the network weights to minimize a loss function. This optimization algorithm requires a starting point in the space of possible weight values from which to begin the optimization process. Weight initialization is a procedure to set the weights of a neural network to small random values that define the starting point for the optimization (learning or training) of the neural network model.
 
-These modern weight initialization techniques are divided based on the type of activation function used in the nodes that are being initialized, such as “S*igmoid and Tanh*” and *“ReLU*.”
+These modern weight initialization techniques are divided based on the type of activation function used in the nodes that are being initialized, such as “*Sigmoid and Tanh*” and “*ReLU*.”
 
 ### [Xavier: Weight Initialization for Sigmoid and Tanh](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/)
 
